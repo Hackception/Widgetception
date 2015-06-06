@@ -17,13 +17,19 @@ body {
   stroke: #000;
 }
 
+path.interpolation {
+  fill: none;
+  stroke: #000;
+  stroke-width: 1px;
+}
+
 </style>
 <body>
 <script src="//d3js.org/d3.v3.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
 <script>
 d3.argmin = function(arr, acc){
-  return _.zip(arr.map(acc), arr).sort(function (a, b){
+  return _.zip(arr.map(acc), arr).sort(function(a,b){
     return d3.ascending(a[0], b[0]);
   })[0][1];
 };
@@ -69,6 +75,11 @@ function lineChart(){
     y.domain([yRange[0], yRange[1]])
       .range([height, 0]);
 
+    var line = d3.svg.line()
+        .interpolate('cardinal')
+        .x(function(d){return x(d.x);})
+        .y(function(d){return y(d.y);});
+
     var xChoices = d3.range.apply(null, xRange);
     //user expects fully closed interval rather than half-open
     xChoices.push(xRange[1]);
@@ -83,7 +94,8 @@ function lineChart(){
     gEnter.append('g').attr('class', 'y axis')
       .append('text').attr('class', 'y label');
     gEnter.append('rect').attr('class', 'canvas');
-    gEnter.append('g').attr('class', 'dot-holder');
+    gEnter.append('g').attr('class', 'user-line')
+      .append('path').attr('class', 'interpolation');
 
     svg
       .attr("width", width_)
@@ -118,7 +130,7 @@ function lineChart(){
       .style('fill-opacity', 0.0);
 
     function drawUserLine(){
-      var dots = g.select('g.dot-holder').selectAll('.dot')
+      var dots = g.select('g.user-line').selectAll('.dot')
           .data(userLine);
       dots.enter().append('circle').attr('class', 'dot');
       dots.exit().remove();
@@ -127,6 +139,11 @@ function lineChart(){
           .attr("cx", function(d) { return x(d.x); })
           .attr("cy", function(d) { return y(d.y); })
           .style("fill", 'tomato');
+      userLine.sort(function(a,b){
+        return d3.ascending(a.x, b.x);
+      });
+      g.select('path.interpolation')
+        .attr('d', line(userLine));
     }
 
     function setClosestPoint(){
