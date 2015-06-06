@@ -33,6 +33,7 @@ function ChartCtrl($http, $q, accountId, appId, idUrl, loginToken, argsClean) {
 
     contentPromise = $http.get(url)
       .then(function (data) {
+        console.log(data)
         if (!data.status || !data.result) {
           return $q.reject(data.error_message);
         }
