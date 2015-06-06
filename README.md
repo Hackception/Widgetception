@@ -2,23 +2,16 @@
 
 ## Endpoints
 
-- /chart/:content_id
+- /api/chart/:content_id
 
 	- GET
-		Return the html page containing the blank, ready-to-be-filled out graph. This is the main page of the app. It is where the user draws their guess for the graph. It needs to have the axis labels and title, as well as logic for how to POST the user's drawn line to our server. It should also have the correct answer, to be displayed after the user guesses, and the heatmap data (same purpose).
-	- POST with data for a single user's line draw.
-		Add the user's submission to our db, and push it on to the lockerdome API.
-- /wizard
-
-	- GET
-		This is the form where a content creator can define the metadata for a chart. The metadata required will be:
-
-			- Headline
-			- subheader, optional
-			- x-axis label
-			- y-axis label
-			- x-domain (min and max)
-			- y-domain (min and max)
-			- (maybe more later?)
+		Consumes content_id param. Produces the database record object consisting of the heat map object for that content id.
 	- POST
-		Make a new chart using the metadata above. Store this in the db so we don't have to do an extra query?
+		Consumes data for a single user's line draw with content_id and user_id?. Add the user's submission to our db, and update the content id's heat map.
+
+- /api/content
+
+	- GET
+		Consumes a url encoded JSON object with content_id attribute. Returns the same object returned by app_fetch_content in Lockerdome's api.
+	- POST
+		Consumes the same object defined in Lockerdome's api for app_create_content minus app_id and app_secret. These will be added by the service. Returns the same object return by Lockerdome's api for this service.
