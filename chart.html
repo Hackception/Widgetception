@@ -68,6 +68,9 @@ function lineChart(){
     {x: 100, y: 79}
   ];
 
+  //private variables and methods
+  var drawTrueLine;
+
   function chart() {
     var width = width_ - margin.left - margin.right,
         height = height_ - margin.top - margin.right;
@@ -168,7 +171,7 @@ function lineChart(){
         .on('drag', setClosestPoint);
     g.select('rect.canvas').call(drag)
 
-    function drawTrueLine(){
+    drawTrueLine = function(){
       var dots = g.select('g.true-line').selectAll('.dot')
           .data(trueLine);
       dots.enter().append('circle').attr('class', 'dot');
@@ -181,11 +184,13 @@ function lineChart(){
       g.select('path.true-interpolation')
         .attr('d', line(trueLine));
     }
-    drawTrueLine();
 
   }
 
-
+  //attach public methods;
+  chart.drawTrueLine = function(){
+    return drawTrueLine();
+  };
   return chart;
 
 }
