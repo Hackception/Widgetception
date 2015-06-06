@@ -1,0 +1,52 @@
+<form class="col-md-12">
+  <div class="input-group">
+    <label>Headline</label>
+    <input class="form-control" ng-model="model.name" ng-required="true" type="text" />
+  </div>
+  <div class="input-group">
+    <label>Subheader</label>
+    <input class="form-control" ng-model="model.text" type="text" />
+  </div>
+  <div class="input-group">
+    <label>Widget Type</label>
+    <select class="form-control" ng-model="model.data.type" ng-options="type for type in widgetTypes" ng-required="true">
+    </select>
+  </div>
+  <div ng-switch="model.data.type">
+    <div  ng-switch-when="lineChart">
+      <div class="input-group">
+        <label>X-Axis Label</label>
+        <input class="form-control" ng-model="model.data.xAxis.label" type="text" />
+      </div>
+      <div class="input-group">
+        <label>X-Axis Min</label>
+        <input class="form-control" ng-model="model.data.xAxis.min" type="text" />
+      </div>
+      <div class="input-group">
+        <label>X-Axis Max</label>
+        <input class="form-control" ng-model="model.data.xAxis.max" type="text" />
+      </div>
+      <div class="input-group">
+        <label>X-Axis Step</label>
+        <input class="form-control" ng-model="model.data.xAxis.step" type="text" />
+      </div>
+      <div class="input-group">
+        <label>Y-Axis Label</label>
+        <input class="form-control" ng-model="model.data.yAxis.label" type="text" />
+      </div>
+      <div class="input-group">
+        <label>Y-Axis Min</label>
+        <input class="form-control" ng-model="model.data.yAxis.min" type="text" />
+      </div>
+      <div class="input-group">
+        <label>Y-Axis Max</label>
+        <input class="form-control" ng-model="model.data.yAxis.max" type="text" />
+      </div>
+      <div class="input-group">
+        <label>Y-Axis Step</label>
+        <input class="form-control" ng-model="model.data.yAxis.step" type="text" />
+      </div>
+
+    </div>
+  </div>
+</form>
