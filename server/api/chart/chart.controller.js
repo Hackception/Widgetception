@@ -6,17 +6,20 @@ var config = require('../../config/environment')
 var mongo = require('mongoskin');
 
 var db = mongo.db(config.mongo.uri);
-db.bind('submission');
+db.bind('submissions');
+db.bind('maps');
 
 exports.getHeatMap = function(req, res) {
   /** query to get heat map **/
-  db.submission.find().toArray(function(err, items) {
-    res.json(items);
+  var contentId = 7742012887400515;
+
+  db.maps.findOne({ contentId: contentId }, function(err, result) {
+    res.json(result);
   });
 };
 
 exports.post = function(req, res) {
-  /** save submission in MongoDB **/
+  /** persist submission to submissions collection **/
   var args = {
     item: 'ABC1',
     details: {
@@ -27,9 +30,36 @@ exports.post = function(req, res) {
 
   //var args = req.body;
 
-  db.submission.insert(args,
+  db.submissions.insert(args,
     function(err, records) {
       /* return something??? */
-      res.json(records);
     });
+
+  var contentId = 7742012887400515;
+
+  /** persist heat map update to maps collection **/
+  db.maps.findOne({ contentId: contentId }, function(err, result) {
+    var newHeatMap;
+    if (result) {
+      /** save new heat map into map collection **/
+
+      // not correct logic just a placeholder
+      result.heatMap = result.heatMap + args.heatMap;
+    }
+    else {
+      /** no result use sumission line **/
+
+      // not correct logic just a placeholder
+      newHeatMap = args.heatMap;
+    }
+
+    db.maps.save(result, function(err, obj) {
+      if (err) {
+        asd;
+      }
+      else {
+        res.send('success!');
+      }
+    });
+  });
 };
