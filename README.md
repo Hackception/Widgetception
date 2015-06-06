@@ -7,7 +7,7 @@
 	- GET
 		Consumes content_id param. Produces the database record object consisting of the heat map object for that content id.
 	- POST
-		Consumes data for a single user's line draw with content_id and user_id?. Add the user's submission to our db, and update the content id's heat map.
+		Consumes data for a single user's line draw with content_id and account_id. Add the user's submission to our db, and update the content id's heat map.
 
 - /api/content
 
