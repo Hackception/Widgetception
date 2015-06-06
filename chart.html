@@ -34,6 +34,9 @@ path.interpolation, path.true-interpolation {
 <script src="//d3js.org/d3.v3.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
 <script>
+// These constants define the heatmap pixel coordinate system.
+var WIDTH = 600, HEIGHT = 400;
+
 d3.argmin = function(arr, acc){
   return _.zip(arr.map(acc), arr).sort(function(a,b){
     return d3.ascending(a[0], b[0]);
@@ -78,7 +81,7 @@ function lineChart(){
 
   // reserve some variables inside the closure for
   // methods that will be defined within chart()
-  var drawTrueLine, drawHeatmap;
+  var drawTrueLine, drawHeatmap, drawUserLine, xChoices;
 
   function chart() {
     var width = width_ - margin.left - margin.right,
@@ -93,7 +96,7 @@ function lineChart(){
         .x(function(d){return x(d.x);})
         .y(function(d){return y(d.y);});
 
-    var xChoices = d3.range.apply(null, xRange);
+    xChoices = d3.range.apply(null, xRange);
     //user expects fully closed interval rather than half-open
     xChoices.push(xRange[1]);
     var canvas = this.selectAll('canvas')
@@ -118,6 +121,7 @@ function lineChart(){
       .append('text').attr('class', 'x label');
     gEnter.append('g').attr('class', 'y axis')
       .append('text').attr('class', 'y label');
+    gEnter.append('g').attr('class', 'warn-missing');
     gEnter.append('rect').attr('class', 'drag-target');
     gEnter.append('g').attr('class', 'user-line')
       .append('path').attr('class', 'interpolation');
@@ -129,6 +133,44 @@ function lineChart(){
       .attr("height", height_);
     var g = svg.select('g')
       .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+
+    flashMissing = function(){
+      var missingXs = _.difference(xChoices, _.pluck(userLine, 'x'));
+      if (missingXs.length === 0) return;
+
+      var rectWidth = x(1.0) - x(0);
+      var warningRect = g.select('g.warn-missing')
+        .selectAll('rect.warning')
+        .data(missingXs);
+      warningRect.enter()
+        .append('rect').attr('class', 'warning');
+      warningRect.exit().remove();
+      warningRect
+        .attr('x', function(d, ix){
+          if (d === 0){
+            return x(d);
+          }
+          else if (d === xChoices[xChoices.length - 1]){
+            return x(d) - rectWidth/2;
+          }
+          return x(d) - rectWidth/2;
+         })
+        .attr('height', height)
+        .attr('width', function (d, ix){
+          return d === 0 ? rectWidth/2 :
+                 d === xChoices[xChoices.length - 1] ? rectWidth/2 :
+                 rectWidth;
+         })
+        .attr('fill', 'orange')
+        .attr('fill-opacity', 0.3)
+      .transition()
+        .duration(2000)
+        .attr('fill-opacity', 0)
+        .each('end', function(){
+          d3.select(this).remove();
+        });
+    };
 
 
     g.select("g.x.axis")
@@ -156,7 +198,7 @@ function lineChart(){
       .attr('height', height)
       .style('fill-opacity', 0.0);
 
-    function drawUserLine(){
+    drawUserLine = function(){
       var dots = g.select('g.user-line').selectAll('.dot')
           .data(userLine);
       dots.enter().append('circle').attr('class', 'dot');
@@ -171,14 +213,14 @@ function lineChart(){
       });
       g.select('path.interpolation')
         .attr('d', line(userLine));
-    }
+    };
 
     function setClosestPoint(){
       var e = d3.event,
         pxX = e.x,
         pxY = e.y,
         scaleX = x.invert(pxX),
-        scaleY = y.invert(pxY),
+        scaleY = Math.max(yRange[0], Math.min(yRange[1], y.invert(pxY))),
         snapToX = d3.argmin(xChoices, function(c){
           return Math.abs(scaleX - c);
         });
@@ -189,7 +231,8 @@ function lineChart(){
       drawUserLine();
     }
     var drag = d3.behavior.drag()
-        .on('drag', setClosestPoint);
+        .on('drag', setClosestPoint)
+        .on('dragend', flashMissing);
     g.select('rect.drag-target').call(drag)
 
     drawTrueLine = function(){
@@ -207,10 +250,45 @@ function lineChart(){
     };
 
     drawHeatmap = function(){
-      var ctx = canvas.node().getContext('2d');
+      /* A brief review of the coordinate systems
+        we have in play:
+          - WIDTH x HEIGHT: this is the coordinate
+          system for the heatmap. It is uniform across
+          all clients and persists to our database.
+          - width x height: this is the coordinate
+          system for the svg pixels.
+          - xRange x yRange: this coordinate system is
+          user defined. It is the numbers drawn on the
+          axes on the page. The server was kind enough
+          to convert from this system to the heatmap
+          system, so we can avoid thinking about it.
 
-      ctx.fillStyle = "green";
-      ctx.fillRect(10, 10, 100, 100);
+        We have a 2d array in heatmap coords, and we need
+        to project it into a canvas image in svg coords.
+
+        We'll make some scales to do this.
+      */
+      var xScale = d3.scale.linear()
+          .domain([0, WIDTH])
+          .range([0, width]),
+        yScale = d3.scale.linear()
+          .domain([0, HEIGHT])
+          .range([height, 0]);
+
+      var ctx = canvas.node().getContext('2d'),
+          image = ctx.createImageData(width, height);
+
+      for (var yix = 0, p = -1; yix < height; ++yix) {
+        for (var xix = 0; xix < width; ++x) {
+         var c = d3.rgb(color(heatmap[y][x]));
+         image.data[++p] = c.r;
+         image.data[++p] = c.g;
+         image.data[++p] = c.b;
+         image.data[++p] = 255;
+        }
+      }
+
+      ctx.putImageData(image, 0, 0);
 
     };
 
@@ -255,7 +333,9 @@ function lineChart(){
   };
   chart.userLine = function(_){
     if (!arguments.length) return userLine;
-    userLine = _; return chart;
+    userLine = _;
+    drawUserLine();
+    return chart;
   };
   chart.trueLine = function(_){
     if (!arguments.length) return trueLine;
@@ -263,8 +343,13 @@ function lineChart(){
   };
   chart.drawHeatmap = function(){
     drawHeatmap();
-  }
-
+  };
+  chart.isComplete = function(){
+    return userLine.length === xChoices.length;
+  };
+  chart.flashMissing = function(){
+    return flashMissing();
+  };
 
   return chart;
 

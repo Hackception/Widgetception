@@ -11,55 +11,52 @@ db.bind('maps');
 
 exports.getHeatMap = function(req, res) {
   /** query to get heat map **/
-  var contentId = 7742012887400515;
+  var contentId = req.param.contentId;
 
   db.maps.findOne({ contentId: contentId }, function(err, result) {
-    res.json(result);
+    if (result) {
+      res.json(result);
+    }
+    else {
+      res.status(403).send('Heat map not found.');
+    }
   });
 };
 
 exports.post = function(req, res) {
   /** persist submission to submissions collection **/
-  var args = {
-    item: 'ABC1',
-    details: {
-      model: '14Q3',
-      manufacturer: 'XYZ Company'
-    }
-  };
-
-  //var args = req.body;
+  var args = req.body;
 
   db.submissions.insert(args,
     function(err, records) {
-      /* return something??? */
+      res.send('success!');
     });
 
-  var contentId = 7742012887400515;
-
-  /** persist heat map update to maps collection **/
-  db.maps.findOne({ contentId: contentId }, function(err, result) {
-    var newHeatMap;
-    if (result) {
-      /** save new heat map into map collection **/
-
-      // not correct logic just a placeholder
-      result.heatMap = result.heatMap + args.heatMap;
-    }
-    else {
-      /** no result use sumission line **/
-
-      // not correct logic just a placeholder
-      newHeatMap = args.heatMap;
-    }
-
-    db.maps.save(result, function(err, obj) {
-      if (err) {
-        asd;
-      }
-      else {
-        res.send('success!');
-      }
-    });
-  });
+  // var contentId = args.contentId;
+  //
+  // /** persist heat map update to maps collection **/
+  // db.maps.findOne({ contentId: contentId }, function(err, result) {
+  //   if (result) {
+  //     /** save new heat map into map collection **/
+  //
+  //     // not correct logic just a placeholder
+  //     result.heatMap = result.heatMap + args.userLine;
+  //   }
+  //   else {
+  //     /** no result use submission line **/
+  //     result = {};
+  //
+  //     // not correct logic just a placeholder
+  //     result.heatMap = args.userLine;
+  //   }
+  //
+  //   db.maps.save(result, function(err, obj) {
+  //     if (err) {
+  //       res.status(403).send('Failure');
+  //     }
+  //     else {
+  //       res.send('success!');
+  //     }
+  //   });
+  // });
 };
