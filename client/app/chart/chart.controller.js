@@ -1,7 +1,7 @@
 // jshint camelcase:false
 'use strict';
 
-function ChartCtrl($http, $q, accountId, appId, idUrl, loginToken, argsClean) {
+function ChartCtrl($http, $q, $scope, accountId, appId, idUrl, loginToken, argsClean) {
   var args = JSON.parse(argsClean);
   var contentId = _.get(args, 'id');
   var operation = _.get(args, 'op');
@@ -22,85 +22,103 @@ function ChartCtrl($http, $q, accountId, appId, idUrl, loginToken, argsClean) {
 
   // private
   function init() {
-    if (operation !== 'render_content') {
-      errors.push('Operation not defined');
-      return;
-    }
+//     if (operation !== 'render_content') {
+//       errors.push('Operation not defined');
+//       return;
+//     }
+//     console.log('json', JSON.stringify({
+//       content_id: contentId
+//     }))
+//     var url = '/api/content?' + encodeURIComponent(JSON.stringify({
+//       content_id: contentId
+//     }));
+// console.log(url)
+//     contentPromise = $http.get(url)
+//       .then(function (data) {
+//         console.log(data)
+//         if (!data.status || !data.result) {
+//           return $q.reject(data.error_message);
+//         }
+//
+//         var appData = data.result.app_data;
+//         headline = data.result.name;
+//         content = data.result.text;
+//         thumbUrl = data.result.thumb_url;
+//         type = appData.type;
+//         xLabel = appData.xAxis.label;
+//         xRange = [appData.xAxis.min, appData.xAxis.max, appData.xAxis.step];
+//         yRange = [appData.yAxis.min, appData.yAxis.max, appData.yAxis.step];
+//         trueLine = appData.trueLine;
+//
+//       }, function (data) {
+//         return $q.reject(data.error_message);
+//       })
+//       .catch(function (error) {
+//         if (error) {
+//           errors.push(error);
+//         } else {
+//           errors.push('Unknown Error: Content Data Fetch');
+//         }
+//       });
+//
+//     // TODO: Fetch Heatmap Data
+//     heatmapPromise = $http.get('')
+//       .then(function (data) {
+//         if (!data.status) {
+//           return $q.reject(data.error_message);
+//         }
+//       }, function (data) {
+//         return $q.reject(data.error_message);
+//       })
+//       .catch(function (error) {
+//         if (error) {
+//           errors.push(error);
+//         } else {
+//           // errors.push('Unknown Error: Heatmap Data Fetch');
+//         }
+//       });
 
-    var url = '/content?' + escape(JSON.stringify({
-      content_id: contentId
-    }));
-
-    contentPromise = $http.get(url)
-      .then(function (data) {
-        console.log(data)
-        if (!data.status || !data.result) {
-          return $q.reject(data.error_message);
-        }
-
-        var appData = data.result.app_data;
-        headline = data.result.name;
-        content = data.result.text;
-        thumbUrl = data.result.thumb_url;
-        type = appData.type;
-        xLabel = appData.xAxis.label;
-        xRange = [appData.xAxis.min, appData.xAxis.max, appData.xAxis.step];
-        yRange = [appData.yAxis.min, appData.yAxis.max, appData.yAxis.step];
-        trueLine = appData.trueLine;
-
-      }, function (data) {
-        return $q.reject(data.error_message);
+    $scope.$on('d3chart::sendUserLine', function (event, userLine) {
+console.log(event, userLine)
+      $http.post('/api/chart/', {
+        contentId: 0,
+        // contentId: contentId,
+        accountId: 0,
+        // accountId: accountId,
+        loginToken: 0,
+        // loginToken: loginToken,
+        userLine: userLine
       })
-      .catch(function (error) {
-        if (error) {
-          errors.push(error);
-        } else {
-          errors.push('Unknown Error: Content Data Fetch');
-        }
-      });
+        .then(function (data) {
+          if (!data.status) {
+            return $q.reject(data.error_message);
+          }
 
-    // TODO: Fetch Heatmap Data
-    heatmapPromise = $http.get('')
-      .then(function (data) {
-        if (!data.status) {
+          this.showResults = true;
+          this.showHeatmap = true;
+
+        }, function (data) {
           return $q.reject(data.error_message);
-        }
-      }, function (data) {
-        return $q.reject(data.error_message);
-      })
-      .catch(function (error) {
-        if (error) {
-          errors.push(error);
-        } else {
-          // errors.push('Unknown Error: Heatmap Data Fetch');
-        }
-      });
+        })
+        .catch(function (error) {
+          if (error) {
+            errors.push(error);
+          } else {
+            errors.push('Unknown Error: Data Submission');
+          }
+        });
+    });
+
   }
 
   // public
   function handleSubmission() {
     console.log('submit')
 
+    $scope.$broadcast('d3chart::getUserLine');
+
     // TODO: Post user data
-    $http.post('', {})
-      .then(function (data) {
-        if (!data.status) {
-          return $q.reject(data.error_message);
-        }
 
-        this.showResults = true;
-        this.showHeatmap = true;
-
-      }, function (data) {
-        return $q.reject(data.error_message);
-      })
-      .catch(function (error) {
-        if (error) {
-          errors.push(error);
-        } else {
-          errors.push('Unknown Error: Data Submission');
-        }
-      });
   }
 
   function handleClear() {
@@ -148,6 +166,7 @@ angular
   .controller('ChartCtrl', [
     '$http',
     '$q',
+    '$scope',
     'accountId',
     'appId',
     'idUrl',

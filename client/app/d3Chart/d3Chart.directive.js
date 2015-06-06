@@ -240,6 +240,8 @@ function d3Chart($timeout) {
       lineChart: lineChart
     });
 
+
+
   }
 
   function link(scope, element, attrs, ctrl) {
@@ -283,7 +285,9 @@ function d3Chart($timeout) {
       }
     });
 
-
+    scope.$on('d3chart::getUserLine', function () {
+      scope.$emit('d3chart::sendUserLine', theChart.userLine());
+    });
   }
 
   return {
