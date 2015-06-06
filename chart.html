@@ -22,6 +22,12 @@ body {
 <script src="//d3js.org/d3.v3.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
 <script>
+d3.argmin = function(arr, acc){
+  return _.zip(arr.map(acc), arr).sort(function (a, b){
+    return d3.ascending(a[0], b[0]);
+  })[0][1];
+};
+
 function lineChart(){
   var width_ = 850, height_ = 500,
       margin = {top: 20, right: 20, bottom: 30, left: 40};
@@ -41,19 +47,19 @@ function lineChart(){
       .scale(y)
       .orient("left");
 
-  var data = [
-    [0, 0],
-    [10, 0],
-    [20, 0],
-    [30, 0],
-    [40, 0],
-    [50, 0],
-    [60, 0],
-    [70, 0],
-    [80, 0],
-    [90, 0],
-    [100, 0]
-  ];
+  var userLine = [/*
+    {x: 0, y: 0},
+    {x: 10, y: 0},
+    {x: 20, y: 0},
+    {x: 30, y: 0},
+    {x: 40, y: 0},
+    {x: 50, y: 0},
+    {x: 60, y: 0},
+    {x: 70, y: 0},
+    {x: 80, y: 0},
+    {x: 90, y: 0},
+    {x: 100, y: 0}
+  */];
 
   function chart() {
     var width = width_ - margin.left - margin.right,
@@ -63,8 +69,12 @@ function lineChart(){
     y.domain([yRange[0], yRange[1]])
       .range([height, 0]);
 
+    var xChoices = d3.range.apply(null, xRange);
+    //user expects fully closed interval rather than half-open
+    xChoices.push(xRange[1]);
+
     var svg = this.selectAll('svg')
-      .data([data]);
+      .data([undefined]);
 
     //Create the skeletal chart, if it doesn't already exist.
     var gEnter = svg.enter().append("svg").append('g');
@@ -101,25 +111,42 @@ function lineChart(){
         .style("text-anchor", "end")
         .text("Sepal Length (cm)");
 
-    g.select('g.dot-holder').selectAll(".dot")
-        .data(data)
-      .enter().append("circle")
-        .attr("class", "dot")
-        .attr("r", 3.5)
-        .attr("cx", function(d) { return x(d[0]); })
-        .attr("cy", function(d) { return y(d[1]); })
-        .style("fill", 'tomato');
 
     g.select('rect.canvas')
       .attr('width', width)
       .attr('height', height)
       .style('fill-opacity', 0.0);
 
-    var drag = d3.behavior.drag()
-        .on('drag',function(){
-          console.log(d3.event);
+    function drawUserLine(){
+      var dots = g.select('g.dot-holder').selectAll('.dot')
+          .data(userLine);
+      dots.enter().append('circle').attr('class', 'dot');
+      dots.exit().remove();
+      dots
+          .attr("r", 3.5)
+          .attr("cx", function(d) { return x(d.x); })
+          .attr("cy", function(d) { return y(d.y); })
+          .style("fill", 'tomato');
+    }
+
+    function setClosestPoint(){
+      var e = d3.event,
+        pxX = e.x,
+        pxY = e.y,
+        scaleX = x.invert(pxX),
+        scaleY = y.invert(pxY),
+        snapToX = d3.argmin(xChoices, function(c){
+          return Math.abs(scaleX - c);
         });
-    g.call(drag)
+      // Remove any values with that x choice
+      userLine = _.reject(userLine, function(d){ return d.x === snapToX; });
+      // Add the new values
+      userLine.push({x: snapToX, y:scaleY});
+      drawUserLine();
+    }
+    var drag = d3.behavior.drag()
+        .on('drag', setClosestPoint);
+    g.select('rect.canvas').call(drag)
 
   }
   return chart;
