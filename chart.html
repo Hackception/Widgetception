@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+body {
+  font: 10px sans-serif;
+}
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.dot {
+  stroke: #000;
+}
+
+</style>
+<body>
+<script src="//d3js.org/d3.v3.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+<script>
+function lineChart(){
+  var width_ = 850, height_ = 500,
+      margin = {top: 20, right: 20, bottom: 30, left: 40};
+
+  var xRange = [0, 100, 10],
+      yRange = [0, 100, 10];
+
+  var x = d3.scale.linear();
+
+  var y = d3.scale.linear();
+
+  var xAxis = d3.svg.axis()
+      .scale(x)
+      .orient("bottom");
+
+  var yAxis = d3.svg.axis()
+      .scale(y)
+      .orient("left");
+
+  var data = [
+    [0, 0],
+    [10, 0],
+    [20, 0],
+    [30, 0],
+    [40, 0],
+    [50, 0],
+    [60, 0],
+    [70, 0],
+    [80, 0],
+    [90, 0],
+    [100, 0]
+  ];
+
+  function chart() {
+    var width = width_ - margin.left - margin.right,
+        height = height_ - margin.top - margin.right;
+    x.domain([xRange[0], xRange[1]])
+      .range([0, width]);
+    y.domain([yRange[0], yRange[1]])
+      .range([height, 0]);
+
+    var svg = this.selectAll('svg')
+      .data([data]);
+
+    //Create the skeletal chart, if it doesn't already exist.
+    var gEnter = svg.enter().append("svg").append('g');
+    gEnter.append('g').attr('class', 'x axis')
+      .append('text').attr('class', 'x label');
+    gEnter.append('g').attr('class', 'y axis')
+      .append('text').attr('class', 'y label');
+    gEnter.append('rect').attr('class', 'canvas');
+    gEnter.append('g').attr('class', 'dot-holder');
+
+    svg
+      .attr("width", width_)
+      .attr("height", height_);
+    var g = svg.select('g')
+      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+
+    g.select("g.x.axis")
+        .attr("transform", "translate(0," + height + ")")
+        .call(xAxis)
+      .select("text.label")
+        .attr("x", width)
+        .attr("y", -6)
+        .style("text-anchor", "end")
+        .text("Sepal Width (cm)");
+
+    g.select("g.y.axis")
+        .call(yAxis)
+      .select("text.label")
+        .attr("class", "label")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 6)
+        .attr("dy", ".71em")
+        .style("text-anchor", "end")
+        .text("Sepal Length (cm)");
+
+    g.select('g.dot-holder').selectAll(".dot")
+        .data(data)
+      .enter().append("circle")
+        .attr("class", "dot")
+        .attr("r", 3.5)
+        .attr("cx", function(d) { return x(d[0]); })
+        .attr("cy", function(d) { return y(d[1]); })
+        .style("fill", 'tomato');
+
+    g.select('rect.canvas')
+      .attr('width', width)
+      .attr('height', height)
+      .style('fill-opacity', 0.0);
+
+    var drag = d3.behavior.drag()
+        .on('drag',function(){
+          console.log(d3.event);
+        });
+    g.call(drag)
+
+  }
+  return chart;
+
+}
+
+var theChart = lineChart();
+
+d3.select('body').call(theChart);
+
+</script>
