@@ -17,7 +17,7 @@ body {
   stroke: #000;
 }
 
-path.interpolation {
+path.interpolation, path.true-interpolation {
   fill: none;
   stroke: #000;
   stroke-width: 1px;
@@ -53,19 +53,20 @@ function lineChart(){
       .scale(y)
       .orient("left");
 
-  var userLine = [/*
-    {x: 0, y: 0},
-    {x: 10, y: 0},
-    {x: 20, y: 0},
-    {x: 30, y: 0},
-    {x: 40, y: 0},
-    {x: 50, y: 0},
-    {x: 60, y: 0},
-    {x: 70, y: 0},
-    {x: 80, y: 0},
-    {x: 90, y: 0},
-    {x: 100, y: 0}
-  */];
+  var userLine = [],
+      trueLine = [
+    {x: 0, y: 20},
+    {x: 10, y: 25},
+    {x: 20, y: 27},
+    {x: 30, y: 32},
+    {x: 40, y: 34},
+    {x: 50, y: 39},
+    {x: 60, y: 42},
+    {x: 70, y: 59},
+    {x: 80, y: 68},
+    {x: 90, y: 72},
+    {x: 100, y: 79}
+  ];
 
   function chart() {
     var width = width_ - margin.left - margin.right,
@@ -96,6 +97,8 @@ function lineChart(){
     gEnter.append('rect').attr('class', 'canvas');
     gEnter.append('g').attr('class', 'user-line')
       .append('path').attr('class', 'interpolation');
+    gEnter.append('g').attr('class', 'true-line')
+      .append('path').attr('class', 'true-interpolation');
 
     svg
       .attr("width", width_)
@@ -165,7 +168,24 @@ function lineChart(){
         .on('drag', setClosestPoint);
     g.select('rect.canvas').call(drag)
 
+    function drawTrueLine(){
+      var dots = g.select('g.true-line').selectAll('.dot')
+          .data(trueLine);
+      dots.enter().append('circle').attr('class', 'dot');
+      dots.exit().remove();
+      dots
+          .attr("r", 3.5)
+          .attr("cx", function(d) { return x(d.x); })
+          .attr("cy", function(d) { return y(d.y); })
+          .style("fill", 'steelblue');
+      g.select('path.true-interpolation')
+        .attr('d', line(trueLine));
+    }
+    drawTrueLine();
+
   }
+
+
   return chart;
 
 }
