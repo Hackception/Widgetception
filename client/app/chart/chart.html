@@ -1,3 +1,41 @@
-<div class="col-md-12">
-This is the chart view.
+<div ng-if="!vm.showResults" cg-busy="vm.contentRender"></div>
+<div ng-if="vm.showResults && vm.showHeatmap" cg-busy="vm.heatmapRender"></div>
+
+<div ng-if="vm.errors.length === 0">
+  <div class="row">
+    <div class="col-xs-12">
+      <img ng-src="{{vm.thumbUrl}}" ng-if="vm.thumbUrl"/>
+      <h3 ng-bind="vm.headline"></h3>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-xs-12">
+      <p ng-bind="vm.content"></p>
+    </div>
+  </div>
+
+  <!-- TODO: INSERT D3 CHART -->
+
+  <div class="row">
+    <div class="col-xs-12">
+      <label>
+        <input type="checkbox"
+          class="pull-left"
+          ng-model="vm.showHeatmap"
+          ng-disabled="!vm.showResults"/>
+        Show Heatmap
+      </label>
+      <button class="btn btn-default pull-right"
+        ng-click="handleClear">Clear</button>
+      <button class="btn btn-primary pull-right"
+        ng-click="handleSubmission">I'm done</button>
+    </div>
+  </div>
+</div>
+
+<div ng-if="vm.errors.length > 0">
+  <ul>
+    <li ng-repeat="error in vm.errors" ng-bind="error"></li>
+  </ul>
 </div>
