@@ -22,7 +22,7 @@ angular.module('lockerdomeApp')
             return $stateParams.login_token;
           }],
           args: ['$stateParams', function ($stateParams) {
-            return $stateParams.args;
+            return ($stateParams.args || JSON.stringify({}));
           }]
         }
       });

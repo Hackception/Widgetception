@@ -1,11 +1,8 @@
+// jshint camelcase:false
 'use strict';
 
-function ChartCtrl($http, $q, $stateParams) {
-  var accountId = $stateParams.accountId;
-  var appId = $stateParams.appId;
-  var idUrl = $stateParams.idUrl;
-  var loginToken = $stateParams.loginToken;
-  var args = JSON.parse($stateParams.args);
+function ChartCtrl($http, $q, accountId, appId, idUrl, loginToken, argsClean) {
+  var args = JSON.parse(argsClean);
   var contentId = _.get(args, 'id');
   var operation = _.get(args, 'op');
 
@@ -13,74 +10,74 @@ function ChartCtrl($http, $q, $stateParams) {
   var headline;
   var content;
   var thumbUrl;
-  var xLabel, xMin, xMax, xStep;
-  var yLabel, yMin, yMax, yStep;
+  var xLabel, xRange;
+  var yLabel, yRange;
   var trueLine;
 
   var showResults = false;
   var showHeatmap = false;
+  var clearData = false;
   var errors = [];
 
   // private
   function init() {
-    if (operation === 'render_content') {
-      var url = '/content?' + escape(JSON.stringify({
-        app_id: appId,
-        content_id: contentId
-      }));
-      contentPromise = $http.get(url)
-        .then(function (data) {
-
-          if (!data.status) {
-            return $q.reject(data.error_message);
-          }
-
-          var appData = data.result.app_data;
-          headline = data.result.name;
-          content = data.result.text;
-          thumbUrl = data.result.thumb_url;
-          xLabel = appData.xAxisLabel;
-          xMin = appData.xAxisMin;
-          xMax = appData.xAxisMax;
-          xStep = appData.yAxisStep;
-          yLabel = appData.yAxisLabel;
-          yMin = appData.yAxisMin;
-          yMax = appData.yAxisMax;
-          yStep = appData.yAxisStep;
-          trueLine = appData.trueLine;
-
-        }, function (data) {
-          return $q.reject(data.error_message);
-        })
-        .catch(function (error) {
-          if (error) {
-            errors.push(error);
-          } else {
-            // errors.push('Unknown Error: Content Data Fetch');
-          }
-        });
-
-      // TODO: Fetch Heatmap Data
-      heatmapPromise = $http.get('')
-        .then(function (data) {
-          if (!data.status) {
-            return $q.reject(data.error_message);
-          }
-        }, function (data) {
-          return $q.reject(data.error_message);
-        })
-        .catch(function (error) {
-          if (error) {
-            errors.push(error);
-          } else {
-            // errors.push('Unknown Error: Heatmap Data Fetch');
-          }
-        });
+    if (operation !== 'render_content') {
+      errors.push('Operation not defined');
+      return;
     }
+
+    var url = '/content?' + escape(JSON.stringify({
+      content_id: contentId
+    }));
+
+    contentPromise = $http.get(url)
+      .then(function (data) {
+        if (!data.status || !data.result) {
+          return $q.reject(data.error_message);
+        }
+
+        var appData = data.result.app_data;
+        headline = data.result.name;
+        content = data.result.text;
+        thumbUrl = data.result.thumb_url;
+        xLabel = appData.xAxisLabel;
+        xRange = [appData.xAxisMin, appData.xAxisMax, appData.xStep];
+        yRange = [appData.yAxisMin, appData.yAxisMax, appData.yStep];
+        trueLine = appData.trueLine;
+
+      }, function (data) {
+        return $q.reject(data.error_message);
+      })
+      .catch(function (error) {
+        if (error) {
+          errors.push(error);
+        } else {
+          errors.push('Unknown Error: Content Data Fetch');
+        }
+      });
+
+    // TODO: Fetch Heatmap Data
+    heatmapPromise = $http.get('')
+      .then(function (data) {
+        if (!data.status) {
+          return $q.reject(data.error_message);
+        }
+      }, function (data) {
+        return $q.reject(data.error_message);
+      })
+      .catch(function (error) {
+        if (error) {
+          errors.push(error);
+        } else {
+          // errors.push('Unknown Error: Heatmap Data Fetch');
+        }
+      });
   }
 
   // public
   function handleSubmission() {
+    console.log('submit')
+
     // TODO: Post user data
     $http.post('', {})
       .then(function (data) {
@@ -88,8 +85,8 @@ function ChartCtrl($http, $q, $stateParams) {
           return $q.reject(data.error_message);
         }
 
-        showResults = true;
-        showHeatmap = true;
+        this.showResults = true;
+        this.showHeatmap = true;
 
       }, function (data) {
         return $q.reject(data.error_message);
@@ -104,7 +101,8 @@ function ChartCtrl($http, $q, $stateParams) {
   }
 
   function handleClear() {
-    // TODO: Clear Data
+    console.log('cleared Data')
+    this.clearData = true;
   }
 
   // exports
@@ -116,23 +114,28 @@ function ChartCtrl($http, $q, $stateParams) {
     headline: headline,
     content: content,
     thumbUrl: thumbUrl,
-    xLabel: xLabel,
-    xMin: xMin,
-    xMax: xMax,
-    xStep: xStep,
+    labelX: xLabel,
+    rangeX: xRange,
     yLabel: yLabel,
-    yMin: yMin,
-    yMax: yMax,
-    yStep: yStep,
+    yRange: yRange,
     trueLine: trueLine,
 
     showResults: showResults,
     showHeatmap: showHeatmap,
     errors: errors,
     handleSubmission: handleSubmission,
-    handleClear: handleClear
+    handleClear: handleClear,
+    clearData: clearData,
 
   });
+
+  angular.extend(this, {
+    labelX: 'garbage',
+    rangeX: [0, 20, 1],
+    yLabel: 'tools',
+    yRange: [0, 1, 0.1],
+  });
+
 
   init();
 }
@@ -142,6 +145,10 @@ angular
   .controller('ChartCtrl', [
     '$http',
     '$q',
-    '$stateParams',
+    'accountId',
+    'appId',
+    'idUrl',
+    'loginToken',
+    'args',
     ChartCtrl
   ]);

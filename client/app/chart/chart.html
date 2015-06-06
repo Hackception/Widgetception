@@ -14,8 +14,14 @@
       <p ng-bind="vm.content"></p>
     </div>
   </div>
-
-  <!-- TODO: INSERT D3 CHART -->
+  <d3-chart label-x="{{vm.labelX}}"
+    range-x="vm.rangeX"
+    y-label="{{vm.yLabel}}"
+    y-range="vm.yRange"
+    show-results="vm.showResults"
+    show-heatmap="vm.showHeatmap"
+    clear-data="vm.clearData">
+  </d3-chart>
 
   <div class="row">
     <div class="col-xs-12">
@@ -23,13 +29,13 @@
         <input type="checkbox"
           class="pull-left"
           ng-model="vm.showHeatmap"
-          ng-disabled="!vm.showResults"/>
+          />
         Show Heatmap
       </label>
       <button class="btn btn-default pull-right"
-        ng-click="handleClear">Clear</button>
+        ng-click="vm.handleClear()">Clear</button>
       <button class="btn btn-primary pull-right"
-        ng-click="handleSubmission">I'm done</button>
+        ng-click="vm.handleSubmission()">I'm done</button>
     </div>
   </div>
 </div>
