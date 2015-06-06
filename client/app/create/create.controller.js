@@ -35,12 +35,10 @@ angular.module('lockerdomeApp')
     };
     /**
      * Parses the model to fit the lockerdome API then posts the the server pass-through.
+     * TODO: call the API and submit the data, while submitting display a nice loading indicator, finish by clearing the
+     *  form on success or displaying an error on failure.
      */
     $scope.submit = function () {
       console.log($scope.model);
     };
-
-    /* Initialization */
-
-    /* Watchers */
   });
