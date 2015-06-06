@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('lockerdomeApp')
-  .controller('CreateCtrl', function ($scope) {
+  .controller('CreateCtrl', function ($scope, $timeout) {
     /* Declarations */
     $scope.model = {
       csv: [],
@@ -30,8 +30,24 @@ angular.module('lockerdomeApp')
           };
           return parsed.x && parsed.y ? parsed : false;
         }).filter(Boolean);
+
+        $scope.createWidgetForm.csv.$setDirty();
+
+        if (!_.isEmpty($scope.model.csv)) {
+          $scope.createWidgetForm.csv.$setValidity('required', true);
+        } else {
+          $scope.createWidgetForm.csv.$setValidity('required', false);
+        }
+
+        $scope.$digest();
       };
-      reader.readAsText(angular.element(inputElement)[0].files[0]);
+
+      if (!_.isEmpty(angular.element(inputElement)[0].files) && angular.element(inputElement)[0].files[0]) {
+        reader.readAsText(angular.element(inputElement)[0].files[0]);
+      } else {
+        $scope.createWidgetForm.csv.$setValidity('required', false);
+        $scope.$digest();
+      }
     };
     /**
      * Parses the model to fit the lockerdome API then posts the the server pass-through.
@@ -41,4 +57,13 @@ angular.module('lockerdomeApp')
     $scope.submit = function () {
       console.log($scope.model);
     };
+
+    /* Watchers */
+    $scope.$watch('model.data.type', function (newType, oldType) {
+      if (newType !== oldType && newType) {
+        $timeout(function () {
+          $scope.createWidgetForm.csv.$setValidity('required', false);
+        });
+      }
+    }, true);
   });
