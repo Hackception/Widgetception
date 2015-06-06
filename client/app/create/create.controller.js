@@ -5,7 +5,7 @@ angular.module('lockerdomeApp')
     /* Declarations */
     $scope.model = {
       csv: [],
-      data: {}
+      app_data: {}
     };
     $scope.chartTypes = [{
       name: 'Line Chart',
@@ -59,7 +59,7 @@ angular.module('lockerdomeApp')
     };
 
     /* Watchers */
-    $scope.$watch('model.data.type', function (newType, oldType) {
+    $scope.$watch('model.app_data.type', function (newType, oldType) {
       if (newType !== oldType && newType) {
         $timeout(function () {
           $scope.createWidgetForm.csv.$setValidity('required', false);

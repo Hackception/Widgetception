@@ -25,7 +25,7 @@
           <label for="type">Chart Type</label>
           <select class="form-control"
             name="type"
-            ng-model="model.data.type"
+            ng-model="model.app_data.type"
             ng-options="type.value as type.name for type in chartTypes"
             ng-required="true">
             <option disabled="true"
@@ -36,8 +36,8 @@
         </div>
       </div>
       <div class="form-inline"
-        ng-if="model.data.type"
-        ng-switch="model.data.type">
+        ng-if="model.app_data.type"
+        ng-switch="model.app_data.type">
         <div class="chartType"
           ng-switch-when="lineChart">
           <div class="hidden-xs row">
@@ -61,7 +61,7 @@
                   <label class="visible-xs-inline" for="xAxisLabel">X-Axis Label</span></label>
                   <input class="form-control"
                     name="xAxisLabel"
-                    ng-model="model.data.xAxis.label"
+                    ng-model="model.app_data.xAxis.label"
                     ng-required="true"
                     type="text" />
                 </div>
@@ -71,7 +71,7 @@
                     for="xAxisMin">X-Axis Min</label>
                   <input class="form-control"
                     name="xAxisMin"
-                    ng-model="model.data.xAxis.min"
+                    ng-model="model.app_data.xAxis.min"
                     ng-required="true"
                     type="number" />
                 </div>
@@ -81,8 +81,8 @@
                     for="xAxisMax">X-Axis Max</label>
                   <input class="form-control"
                     name="xAxisMax"
-                    min="{{model.data.xAxis.min + 1}}"
-                    ng-model="model.data.xAxis.max"
+                    min="{{model.app_data.xAxis.min + 1}}"
+                    ng-model="model.app_data.xAxis.max"
                     ng-required="true"
                     type="number" />
                 </div>
@@ -92,7 +92,7 @@
                     for="xAxisStep">X-Axis Step</label>
                   <input class="form-control"
                     name="xAxisStep"
-                    ng-model="model.data.xAxis.step"
+                    ng-model="model.app_data.xAxis.step"
                     ng-required="true"
                     type="number" />
                 </div>
@@ -110,7 +110,7 @@
                   <label class="visible-xs-inline" for="yAxisLabel">Y-Axis Label</label>
                   <input class="form-control"
                     name="yAxisLabel"
-                    ng-model="model.data.yAxis.label"
+                    ng-model="model.app_data.yAxis.label"
                     ng-required="true"
                     type="text" />
                 </div>
@@ -120,7 +120,7 @@
                     for="yAxisMin">Y-Axis Min</label>
                   <input class="form-control"
                     name="yAxisMin"
-                    ng-model="model.data.yAxis.min"
+                    ng-model="model.app_data.yAxis.min"
                     ng-required="true"
                     type="number" />
                 </div>
@@ -130,8 +130,8 @@
                     for="yAxisMax">Y-Axis Max</label>
                   <input class="form-control"
                     name="yAxisMax"
-                    min="{{model.data.yAxis.min + 1}}"
-                    ng-model="model.data.yAxis.max"
+                    min="{{model.app_data.yAxis.min + 1}}"
+                    ng-model="model.app_data.yAxis.max"
                     ng-required="true"
                     type="number" />
                 </div>
@@ -141,7 +141,7 @@
                     for="yAxisStep">Y-Axis Step</label>
                   <input class="form-control"
                     name="yAxisStep"
-                    ng-model="model.data.yAxis.step"
+                    ng-model="model.app_data.yAxis.step"
                     ng-required="true"
                     type="number" />
                 </div>
