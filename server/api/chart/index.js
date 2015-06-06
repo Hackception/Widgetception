@@ -5,7 +5,7 @@ var controller = require('./chart.controller');
 
 var router = express.Router();
 
-router.get('/', controller.get);
+router.get('/', controller.getHeatMap);
 
 router.post('/', controller.post);
 
