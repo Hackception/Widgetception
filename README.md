@@ -2,7 +2,7 @@
 
 ## Endpoints
 
-- /api/chart/:content_id
+- /api/chart
 
 	- GET
 		Consumes content_id param. Produces the database record object consisting of the heat map object for that content id.
