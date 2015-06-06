@@ -6,6 +6,12 @@ body {
   font: 10px sans-serif;
 }
 
+svg, canvas {
+  position: absolute;
+}
+canvas {
+  pointer-events: none;
+}
 .axis path,
 .axis line {
   fill: none;
@@ -39,7 +45,9 @@ function lineChart(){
       margin = {top: 20, right: 20, bottom: 30, left: 40};
 
   var xRange = [0, 100, 10],
-      yRange = [0, 100, 10];
+      yRange = [0, 100, 10],
+      xLabel = 'Sepal Width (cm)',
+      yLabel = 'Sepal Length (cm)';
 
   var x = d3.scale.linear();
 
@@ -68,8 +76,9 @@ function lineChart(){
     {x: 100, y: 79}
   ];
 
-  //private variables and methods
-  var drawTrueLine;
+  // reserve some variables inside the closure for
+  // methods that will be defined within chart()
+  var drawTrueLine, drawHeatmap;
 
   function chart() {
     var width = width_ - margin.left - margin.right,
@@ -87,9 +96,21 @@ function lineChart(){
     var xChoices = d3.range.apply(null, xRange);
     //user expects fully closed interval rather than half-open
     xChoices.push(xRange[1]);
+    var canvas = this.selectAll('canvas')
+      .data([undefined]);
 
     var svg = this.selectAll('svg')
       .data([undefined]);
+
+    canvas.enter().append('canvas');
+
+    canvas
+      .attr('width', width)
+      .attr('height', height)
+      .style('left', margin.left + 'px')
+      .style('top', margin.top + 'px')
+      .style('width', width + 'px')
+      .style('height', height + 'px');
 
     //Create the skeletal chart, if it doesn't already exist.
     var gEnter = svg.enter().append("svg").append('g');
@@ -97,7 +118,7 @@ function lineChart(){
       .append('text').attr('class', 'x label');
     gEnter.append('g').attr('class', 'y axis')
       .append('text').attr('class', 'y label');
-    gEnter.append('rect').attr('class', 'canvas');
+    gEnter.append('rect').attr('class', 'drag-target');
     gEnter.append('g').attr('class', 'user-line')
       .append('path').attr('class', 'interpolation');
     gEnter.append('g').attr('class', 'true-line')
@@ -117,7 +138,7 @@ function lineChart(){
         .attr("x", width)
         .attr("y", -6)
         .style("text-anchor", "end")
-        .text("Sepal Width (cm)");
+        .text(xLabel);
 
     g.select("g.y.axis")
         .call(yAxis)
@@ -127,10 +148,10 @@ function lineChart(){
         .attr("y", 6)
         .attr("dy", ".71em")
         .style("text-anchor", "end")
-        .text("Sepal Length (cm)");
+        .text(yLabel);
 
 
-    g.select('rect.canvas')
+    g.select('rect.drag-target')
       .attr('width', width)
       .attr('height', height)
       .style('fill-opacity', 0.0);
@@ -169,7 +190,7 @@ function lineChart(){
     }
     var drag = d3.behavior.drag()
         .on('drag', setClosestPoint);
-    g.select('rect.canvas').call(drag)
+    g.select('rect.drag-target').call(drag)
 
     drawTrueLine = function(){
       var dots = g.select('g.true-line').selectAll('.dot')
@@ -183,7 +204,15 @@ function lineChart(){
           .style("fill", 'steelblue');
       g.select('path.true-interpolation')
         .attr('d', line(trueLine));
-    }
+    };
+
+    drawHeatmap = function(){
+      var ctx = canvas.node().getContext('2d');
+
+      ctx.fillStyle = "green";
+      ctx.fillRect(10, 10, 100, 100);
+
+    };
 
   }
 
@@ -191,6 +220,52 @@ function lineChart(){
   chart.drawTrueLine = function(){
     return drawTrueLine();
   };
+  chart.height = function(_){
+    if (!arguments.length) return height_;
+    height_ = _; return chart;
+  };
+  chart.width = function(_){
+    if (!arguments.length) return width_;
+    width_ = _; return chart;
+  };
+  chart.margin = function(changes){
+    if (!arguments.length)  return margin;
+    ['top','bottom','left','right'].each(function(k){
+      if (changes[k]){
+        margin[k] = changes[k];
+      }
+    });
+    return chart;
+  };
+  chart.xRange = function(_){
+    if (!arguments.length) return xRange;
+    xRange = _; return chart;
+  };
+  chart.yRange = function(_){
+    if (!arguments.length) return yRange;
+    yRange = _; return chart;
+  };
+  chart.xLabel = function(_){
+    if (!arguments.length) return xLabel;
+    xLabel = _; return chart;
+  };
+  chart.yLabel = function(_){
+    if (!arguments.length) return yLabel;
+    yLabel = _; return chart;
+  };
+  chart.userLine = function(_){
+    if (!arguments.length) return userLine;
+    userLine = _; return chart;
+  };
+  chart.trueLine = function(_){
+    if (!arguments.length) return trueLine;
+    trueLine = _; return chart;
+  };
+  chart.drawHeatmap = function(){
+    drawHeatmap();
+  }
+
+
   return chart;
 
 }
