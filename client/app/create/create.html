@@ -1,52 +1,174 @@
-<form class="col-md-12">
-  <div class="input-group">
-    <label>Headline</label>
-    <input class="form-control" ng-model="model.name" ng-required="true" type="text" />
-  </div>
-  <div class="input-group">
-    <label>Subheader</label>
-    <input class="form-control" ng-model="model.text" type="text" />
-  </div>
-  <div class="input-group">
-    <label>Widget Type</label>
-    <select class="form-control" ng-model="model.data.type" ng-options="type for type in widgetTypes" ng-required="true">
-    </select>
-  </div>
-  <div ng-switch="model.data.type">
-    <div  ng-switch-when="lineChart">
-      <div class="input-group">
-        <label>X-Axis Label</label>
-        <input class="form-control" ng-model="model.data.xAxis.label" type="text" />
-      </div>
-      <div class="input-group">
-        <label>X-Axis Min</label>
-        <input class="form-control" ng-model="model.data.xAxis.min" type="text" />
-      </div>
-      <div class="input-group">
-        <label>X-Axis Max</label>
-        <input class="form-control" ng-model="model.data.xAxis.max" type="text" />
-      </div>
-      <div class="input-group">
-        <label>X-Axis Step</label>
-        <input class="form-control" ng-model="model.data.xAxis.step" type="text" />
-      </div>
-      <div class="input-group">
-        <label>Y-Axis Label</label>
-        <input class="form-control" ng-model="model.data.yAxis.label" type="text" />
-      </div>
-      <div class="input-group">
-        <label>Y-Axis Min</label>
-        <input class="form-control" ng-model="model.data.yAxis.min" type="text" />
-      </div>
-      <div class="input-group">
-        <label>Y-Axis Max</label>
-        <input class="form-control" ng-model="model.data.yAxis.max" type="text" />
-      </div>
-      <div class="input-group">
-        <label>Y-Axis Step</label>
-        <input class="form-control" ng-model="model.data.yAxis.step" type="text" />
-      </div>
+<div ng-include="'components/navbar/navbar.html'"></div>
 
-    </div>
+<div class="container">
+  <div class="row">
+    <form class="col-md-12 create"
+      name="createWidgetForm"
+      ng-submit="submit()">
+      <div class="form-horizontal">
+        <div class="form-group"
+          ng-class="{'has-error': createWidgetForm.name.$invalid && !createWidgetForm.name.$pristine}">
+          <label for="name">Name</label>
+          <input class="form-control"
+            name="name"
+            ng-model="model.name"
+            ng-required="true"
+            type="text" />
+        </div>
+        <div class="form-group">
+          <label for="text">Text</label>
+          <input class="form-control"
+            name="text"
+            ng-model="model.text"
+            type="text" />
+        </div>
+        <div class="form-group"
+          ng-class="{'has-error': createWidgetForm.type.$invalid && !createWidgetForm.type.$pristine}">
+          <label for="type">Chart Type</label>
+          <select class="form-control"
+            name="type"
+            ng-model="model.data.type"
+            ng-options="type.value as type.name for type in chartTypes"
+            ng-required="true">
+            <option disabled="true"
+              value="">
+              Select a Chart Type
+            </opton>
+          </select>
+        </div>
+      </div>
+      <div class="chartType form-inline"
+        ng-switch="model.data.type">
+        <div  ng-switch-when="lineChart">
+          <div class="hidden-xs row">
+            <div class="col-sm-10 col-sm-offset-2">
+              <div class="row">
+                <label class="col-xs-3">Label</label>
+                <label class="col-xs-3">Min</label>
+                <label class="col-xs-3">Max</label>
+                <label class="col-xs-3">Step</label>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <label class="col-sm-2 hidden-xs">
+              X-Axis
+            </label>
+            <div class="col-sm-10">
+              <div class="row">
+                <div class="form-group col-sm-3"
+                  ng-class="{'has-error': createWidgetForm.xAxisLabel.$invalid && !createWidgetForm.xAxisLabel.$pristine}">
+                  <label class="visible-xs-inline" for="xAxisLabel">X-Axis Label</span></label>
+                  <input class="form-control"
+                    name="xAxisLabel"
+                    ng-model="model.data.xAxis.label"
+                    ng-required="true"
+                    type="text" />
+                </div>
+                <div class="form-group col-sm-3"
+                  ng-class="{'has-error': createWidgetForm.xAxisMin.$invalid && !createWidgetForm.xAxisMin.$pristine}">
+                  <label class="visible-xs-inline"
+                    for="xAxisMin">X-Axis Min</label>
+                  <input class="form-control"
+                    name="xAxisMin"
+                    ng-model="model.data.xAxis.min"
+                    ng-required="true"
+                    type="number" />
+                </div>
+                <div class="form-group col-sm-3"
+                  ng-class="{'has-error': createWidgetForm.xAxisMax.$invalid && !createWidgetForm.xAxisMax.$pristine}">
+                  <label class="visible-xs-block"
+                    for="xAxisMax">X-Axis Max</label>
+                  <input class="form-control"
+                    name="xAxisMax"
+                    min="{{model.data.xAxis.min + 1}}"
+                    ng-model="model.data.xAxis.max"
+                    ng-required="true"
+                    type="number" />
+                </div>
+                <div class="form-group col-sm-3"
+                  ng-class="{'has-error': createWidgetForm.xAxisStep.$invalid && !createWidgetForm.xAxisStep.$pristine}">
+                  <label class="visible-xs-block"
+                    for="xAxisStep">X-Axis Step</label>
+                  <input class="form-control"
+                    name="xAxisStep"
+                    ng-model="model.data.xAxis.step"
+                    ng-required="true"
+                    type="text" />
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <label class="col-sm-2 hidden-xs">
+              Y-Axis
+            </label>
+            <div class="col-sm-10">
+              <div class="row">
+                <div class="form-group col-sm-3"
+                  ng-class="{'has-error': createWidgetForm.yAxisLabel.$invalid && !createWidgetForm.yAxisLabel.$pristine}">
+                  <label class="visible-xs-inline" for="yAxisLabel">Y-Axis Label</label>
+                  <input class="form-control"
+                    name="yAxisLabel"
+                    ng-model="model.data.yAxis.label"
+                    ng-required="true"
+                    type="text" />
+                </div>
+                <div class="form-group col-sm-3"
+                  ng-class="{'has-error': createWidgetForm.yAxisMin.$invalid && !createWidgetForm.yAxisMin.$pristine}">
+                  <label class="visible-xs-block"
+                    for="yAxisMin">Y-Axis Min</label>
+                  <input class="form-control"
+                    name="yAxisMin"
+                    ng-model="model.data.yAxis.min"
+                    ng-required="true"
+                    type="number" />
+                </div>
+                <div class="form-group col-sm-3"
+                  ng-class="{'has-error': createWidgetForm.yAxisMax.$invalid && !createWidgetForm.yAxisMax.$pristine}">
+                  <label class="visible-xs-block"
+                    for="yAxisMax">Y-Axis Max</label>
+                  <input class="form-control"
+                    name="yAxisMax"
+                    min="{{model.data.yAxis.min + 1}}"
+                    ng-model="model.data.yAxis.max"
+                    ng-required="true"
+                    type="number" />
+                </div>
+                <div class="form-group col-sm-3"
+                  ng-class="{'has-error': createWidgetForm.yAxisStep.$invalid && !createWidgetForm.yAxisStep.$pristine}">
+                  <label class="visible-xs-block"
+                    for="yAxisStep">Y-Axis Step</label>
+                  <input class="form-control"
+                    name="yAxisStep"
+                    ng-model="model.data.yAxis.step"
+                    ng-required="true"
+                    type="text" />
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="form-group col-xs-12"
+              ng-class="{'has-error': createWidgetForm.csv.$invalid && !createWidgetForm.csv.$pristine}">
+              <label for="csv">
+                Upload a CSV file containing your true line data
+              </label>
+              <input name="csv"
+                onchange="angular.element(this).scope().csvChange(this)"
+                required="true"
+                type="file" />
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <button class="btn btn-primary"
+          ng-disabled="createWidgetForm.$invalid"
+          type="submit">
+          Submit
+        </button>
+      </div>
+    </form>
   </div>
-</form>
+</div>
