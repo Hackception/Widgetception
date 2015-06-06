@@ -1,4 +1,6 @@
-# Endpoints
+# Charted for GlobalHack 4
+
+## Endpoints
 
 - /chart/:content_id
 
