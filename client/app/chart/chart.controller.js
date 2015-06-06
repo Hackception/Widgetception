@@ -7,6 +7,7 @@ function ChartCtrl($http, $q, accountId, appId, idUrl, loginToken, argsClean) {
   var operation = _.get(args, 'op');
 
   var contentPromise, heatmapPromise;
+  var type;
   var headline;
   var content;
   var thumbUrl;
@@ -40,9 +41,10 @@ function ChartCtrl($http, $q, accountId, appId, idUrl, loginToken, argsClean) {
         headline = data.result.name;
         content = data.result.text;
         thumbUrl = data.result.thumb_url;
-        xLabel = appData.xAxisLabel;
-        xRange = [appData.xAxisMin, appData.xAxisMax, appData.xStep];
-        yRange = [appData.yAxisMin, appData.yAxisMax, appData.yStep];
+        type = appData.type;
+        xLabel = appData.xAxis.label;
+        xRange = [appData.xAxis.min, appData.xAxis.max, appData.xAxis.step];
+        yRange = [appData.yAxis.min, appData.yAxis.max, appData.yAxis.step];
         trueLine = appData.trueLine;
 
       }, function (data) {
@@ -133,7 +135,7 @@ function ChartCtrl($http, $q, accountId, appId, idUrl, loginToken, argsClean) {
     labelX: 'garbage',
     rangeX: [0, 20, 1],
     yLabel: 'tools',
-    yRange: [0, 1, 0.1],
+    yRange: [0, 10, 1],
   });
 
 
