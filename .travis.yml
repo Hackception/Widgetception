@@ -5,9 +5,10 @@ node_js:
 before_script:
 - npm install -g bower grunt-cli
 - bower install
-- git config --global user.email "no-reply@travis.org"
-- git config --global user.name "Travis CI"
 after_success:
 - test ${TRAVIS_BRANCH} = master && grunt build
+- git config --global user.email "no-reply@travis.org"
+- git config --global user.name "Travis CI"
+- git remote add openshift ssh://5572750750044635be000063@charted-gh4.rhcloud.com/~/git/charted.git/
 - test ${TRAVIS_BRANCH} = master && grunt buildcontrol:openshift
 services: mongodb
