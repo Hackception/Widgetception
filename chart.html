@@ -228,9 +228,9 @@ function lineChart(){
     if (!arguments.length) return width_;
     width_ = _; return chart;
   };
-  chart.margin = function(changes){
+  chart.margins = function(changes){
     if (!arguments.length)  return margin;
-    ['top','bottom','left','right'].each(function(k){
+    _.each(['top','bottom','left','right'], function(k){
       if (changes[k]){
         margin[k] = changes[k];
       }
@@ -270,7 +270,15 @@ function lineChart(){
 
 }
 
-var theChart = lineChart();
+var theChart = lineChart()
+        .height(400)
+        .width(800)
+        .margins({left: 30, top:100})
+        .xLabel('garbage')
+        .yLabel('food')
+        .xRange([0, 20, 1])
+        .yRange([0, 1, 0.1]);
+
 
 d3.select('body').call(theChart);
 
