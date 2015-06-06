@@ -148,18 +148,18 @@ function lineChart(){
       warningRect.exit().remove();
       warningRect
         .attr('x', function(d, ix){
-          if (ix === 0){
+          if (d === 0){
             return x(d);
           }
-          else if (ix === xChoices.length - 1){
+          else if (d === xChoices[xChoices.length - 1]){
             return x(d) - rectWidth/2;
           }
           return x(d) - rectWidth/2;
          })
         .attr('height', height)
         .attr('width', function (d, ix){
-          return ix === 0 ? rectWidth/2 :
-                 ix === xChoices.length - 1 ? rectWidth/2 :
+          return d === 0 ? rectWidth/2 :
+                 d === xChoices[xChoices.length - 1] ? rectWidth/2 :
                  rectWidth;
          })
         .attr('fill', 'orange')
