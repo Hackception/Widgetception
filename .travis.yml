@@ -6,5 +6,6 @@ before_script:
 - npm install -g bower grunt-cli
 - bower install
 after_success:
+- test ${TRAVIS_BRANCH} = master && grunt build
 - test ${TRAVIS_BRANCH} = master && grunt buildcontrol:openshift
 services: mongodb
