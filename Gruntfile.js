@@ -385,11 +385,7 @@ module.exports = function (grunt) {
         commit: true,
         push: true,
         connectCommits: false,
-        message: 'Built %sourceName% from commit %sourceCommit% on branch %sourceBranch%',
-        config: {
-          'user.name': 'Travis CI',
-          'user.email': 'no-reply@travis.org'
-        }
+        message: 'Built %sourceName% from commit %sourceCommit% on branch %sourceBranch%'
       },
       heroku: {
         options: {
