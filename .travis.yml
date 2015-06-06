@@ -5,6 +5,8 @@ node_js:
 before_script:
 - npm install -g bower grunt-cli
 - bower install
+- git config user.email "no-reply@travisci.org"
+- git config user.name "Travis CI"
 after_success:
 - test ${TRAVIS_BRANCH} = master && grunt build
 - test ${TRAVIS_BRANCH} = master && grunt buildcontrol:openshift
