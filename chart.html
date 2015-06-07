@@ -33,9 +33,10 @@ path.interpolation, path.true-interpolation {
 <body>
 <script src="//d3js.org/d3.v3.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+<script src="/colorbrewer.js"></script>
 <script>
 // These constants define the heatmap pixel coordinate system.
-var WIDTH = 600, HEIGHT = 400;
+var WIDTH = 60, HEIGHT = 40;
 
 d3.argmin = function(arr, acc){
   return _.zip(arr.map(acc), arr).sort(function(a,b){
@@ -81,8 +82,11 @@ function lineChart(){
 
   // reserve some variables inside the closure for
   // methods that will be defined within chart()
-  var drawTrueLine, drawHeatmap, drawUserLine, xChoices;
-
+  var drawTrueLine, drawHeatmap, hideHeatmap,
+      drawUserLine, xChoices, heatmap;
+  heatmap = d3.range(HEIGHT).map(function(){
+    return d3.range(WIDTH);
+  });
   function chart() {
     var width = width_ - margin.left - margin.right,
         height = height_ - margin.top - margin.right;
@@ -117,6 +121,7 @@ function lineChart(){
 
     //Create the skeletal chart, if it doesn't already exist.
     var gEnter = svg.enter().append("svg").append('g');
+    gEnter.append('g').attr('class', 'heat-map');
     gEnter.append('g').attr('class', 'x axis')
       .append('text').attr('class', 'x label');
     gEnter.append('g').attr('class', 'y axis')
@@ -268,28 +273,47 @@ function lineChart(){
 
         We'll make some scales to do this.
       */
+      var hm = _.flatten(heatmap).sort(d3.ascending);
+
       var xScale = d3.scale.linear()
           .domain([0, WIDTH])
           .range([0, width]),
         yScale = d3.scale.linear()
           .domain([0, HEIGHT])
-          .range([height, 0]);
+          .range([height, 0]),
+        color = d3.scale.threshold()
+          .domain(d3.range(9).map(function(ix){
+            return d3.quantile(hm, (ix + 1) / 9) + 1;
+          }))
+          .range(colorbrewer.Purples[9])
 
-      var ctx = canvas.node().getContext('2d'),
-          image = ctx.createImageData(width, height);
+      var heatRow = g.select('g.heat-map')
+        .selectAll('g.heat-row')
+        .data(heatmap)
+      .enter()
+        .append('g').attr('class','heat-row')
+        .attr('transform', function(d, ix){
+          return 'translate(0,' + yScale(ix) +  ')';
+        });
 
-      for (var yix = 0, p = -1; yix < height; ++yix) {
-        for (var xix = 0; xix < width; ++x) {
-         var c = d3.rgb(color(heatmap[y][x]));
-         image.data[++p] = c.r;
-         image.data[++p] = c.g;
-         image.data[++p] = c.b;
-         image.data[++p] = 255;
-        }
-      }
+      heatRow.selectAll('g.heat-cell')
+        .data(function(d){return d;})
+      .enter()
+        .append('g').attr('class', 'heat-cell')
+        .attr('transform', function(d, ix){
+          return 'translate(' + xScale(ix) + ',0)';
+        })
+        .append('rect')
+        .attr('y', yScale(1) - yScale(0))
+        .attr('width', xScale(1) - xScale(0))
+        .attr('height', yScale(0) - yScale(1))
+        .attr('fill', color);
 
-      ctx.putImageData(image, 0, 0);
+    };
 
+    hideHeatmap = function(){
+      g.select('g.heat-map').selectAll('g.heat-row')
+        .data([]).exit().remove();
     };
 
   }
@@ -343,6 +367,9 @@ function lineChart(){
   };
   chart.drawHeatmap = function(){
     drawHeatmap();
+  };
+  chart.hideHeatmap = function(){
+    hideHeatmap();
   };
   chart.isComplete = function(){
     return userLine.length === xChoices.length;
