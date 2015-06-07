@@ -1,7 +1,7 @@
 <div ng-if="!showResults" cg-busy="contentRender"></div>
 <div ng-if="showResults && showHeatmap" cg-busy="heatmapRender"></div>
 
-<div ng-if="errors.length === 0">
+<div ng-if="errors.length === 0" cg-busy="{promise: submission, delay: 250, minDuration: 1000}">
   <div class="row">
     <div class="col-xs-12">
       <img ng-src="{{thumbUrl}}" ng-if="thumbUrl"/>
@@ -14,7 +14,8 @@
       <p ng-bind="content"></p>
     </div>
   </div>
-  <d3-chart ng-if="loaded" label-x="{{labelX}}"
+  <div class="visible-xs-block">CHART</div>
+  <d3-chart class="hidden-xs" ng-if="loaded" label-x="{{labelX}}"
     range-x="rangeX"
     y-label="{{yLabel}}"
     y-range="yRange"
@@ -27,17 +28,22 @@
 
   <div class="row">
     <div class="col-xs-12">
-      <label>
+      <label
+      ng-show="showResults">
         <input type="checkbox"
           class="pull-left"
           ng-model="showHeatmap"
           />
         Show Heatmap
       </label>
-      <button class="btn btn-default pull-right"
-        ng-click="handleClear()">Clear</button>
-      <button class="btn btn-primary pull-right"
-        ng-click="handleSubmission()">I'm done</button>
+    <button class="btn btn-primary"
+      ng-click="handleSubmission()"
+      ng-disabled="showResults"
+      ng-hide="showResults">I'm done</button>
+      <button class="btn btn-default"
+        ng-click="handleClear()"
+        ng-disabled="showResults"
+        ng-hide="showResults">Clear</button>
     </div>
   </div>
 </div>

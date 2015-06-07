@@ -60,12 +60,17 @@ function ChartCtrl($http, $q, $scope, $window, accountId, appId, idUrl, loginTok
         if (error) {
           $scope.errors.push(error);
         } else {
-          // errors.push('Unknown Error: Heatmap Data Fetch');
+          $scope.errors.push('Unknown Error: Heatmap Data Fetch');
         }
       });
 
     $scope.$on('d3chart::sendUserLine', function (event, userLine) {
-      $http.post('/api/chart/', {
+      if (!userLine) {
+        alert('Please fill out the rest of the chart');
+        return;
+      }
+
+      $scope.submission = $http.post('/api/chart/', {
         contentId: contentId,
         accountId: accountId,
         loginToken: loginToken,
@@ -79,7 +84,7 @@ function ChartCtrl($http, $q, $scope, $window, accountId, appId, idUrl, loginTok
           }
 
           $scope.showResults = true;
-          // self.showHeatmap = true;
+          $scope.showHeatmap = true;
 
         }, function (data) {
           return $q.reject(data.error_message);
@@ -95,12 +100,12 @@ function ChartCtrl($http, $q, $scope, $window, accountId, appId, idUrl, loginTok
 
     $window.parent.postMessage(JSON.stringify({
       name: 'request_height',
-      args: ['600px']
+      args: ['400px']
     }), '*');
-    $window.parent.postMessage(JSON.stringify({
-      name: 'request_width',
-      args: ['800px']
-    }), '*');
+    // $window.parent.postMessage(JSON.stringify({
+    //   name: 'request_width',
+    //   args: ['800px']
+    // }), '*');
   }
 
   // public

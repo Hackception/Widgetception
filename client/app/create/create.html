@@ -83,7 +83,7 @@
                     for="xAxisMax">X-Axis Max</label>
                   <input class="form-control"
                     name="xAxisMax"
-                    min="{{model.app_data.xAxis.min + 1}}"
+                    min="{{model.app_data.xAxis.min}}"
                     ng-model="model.app_data.xAxis.max"
                     ng-required="true"
                     type="number" />
@@ -94,6 +94,8 @@
                     for="xAxisStep">X-Axis Step</label>
                   <input class="form-control"
                     name="xAxisStep"
+                    max="{{model.app_data.xAxis.max - model.app_data.xAxis.min}}"
+                    min="0"
                     ng-model="model.app_data.xAxis.step"
                     ng-required="true"
                     type="number" />
@@ -132,12 +134,12 @@
                     for="yAxisMax">Y-Axis Max</label>
                   <input class="form-control"
                     name="yAxisMax"
-                    min="{{model.app_data.yAxis.min + 1}}"
+                    min="{{model.app_data.yAxis.min}}"
                     ng-model="model.app_data.yAxis.max"
                     ng-required="true"
                     type="number" />
                 </div>
-                <div class="form-group col-sm-3"
+                <!-- <div class="form-group col-sm-3"
                   ng-class="{'has-error': createWidgetForm.yAxisStep.$invalid && !createWidgetForm.yAxisStep.$pristine}">
                   <label class="visible-xs-block"
                     for="yAxisStep">Y-Axis Step</label>
@@ -146,7 +148,7 @@
                     ng-model="model.app_data.yAxis.step"
                     ng-required="true"
                     type="number" />
-                </div>
+                </div> -->
               </div>
             </div>
           </div>
