@@ -14,7 +14,8 @@
       <p ng-bind="content"></p>
     </div>
   </div>
-  <d3-chart ng-if="loaded" label-x="{{labelX}}"
+  <div class="visible-xs-block">CHART</div>
+  <d3-chart class="hidden-xs" ng-if="loaded" label-x="{{labelX}}"
     range-x="rangeX"
     y-label="{{yLabel}}"
     y-range="yRange"
@@ -35,12 +36,14 @@
           />
         Show Heatmap
       </label>
-      <button class="btn btn-default pull-right"
+    <button class="btn btn-primary"
+      ng-click="handleSubmission()"
+      ng-disabled="showResults"
+      ng-hide="showResults">I'm done</button>
+      <button class="btn btn-default"
         ng-click="handleClear()"
-        ng-disabled="showResults">Clear</button>
-      <button class="btn btn-primary pull-right"
-        ng-click="handleSubmission()"
-        ng-disabled="showResults">I'm done</button>
+        ng-disabled="showResults"
+        ng-hide="showResults">Clear</button>
     </div>
   </div>
 </div>

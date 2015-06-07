@@ -65,6 +65,10 @@ function ChartCtrl($http, $q, $scope, $window, accountId, appId, idUrl, loginTok
       });
 
     $scope.$on('d3chart::sendUserLine', function (event, userLine) {
+      if (!userLine) {
+        alert('Please fill out the rest of the chart');
+        return;
+      }
 
       $scope.submission = $http.post('/api/chart/', {
         contentId: contentId,
@@ -96,7 +100,7 @@ function ChartCtrl($http, $q, $scope, $window, accountId, appId, idUrl, loginTok
 
     $window.parent.postMessage(JSON.stringify({
       name: 'request_height',
-      args: ['300px']
+      args: ['400px']
     }), '*');
     // $window.parent.postMessage(JSON.stringify({
     //   name: 'request_width',
