@@ -2,18 +2,40 @@ d3-chart {
   .axis path,
   .axis line {
     fill: none;
-    stroke: #000;
+    stroke: #a2a2a2;
+    stroke-width: 1.2;
     shape-rendering: crispEdges;
   }
-  .dot, .true-dot {
-    stroke: #000;
+  text {
+    font-size: 12px;
+    fill: #a2a2a2;
   }
-  path.interpolation,
+  .dot {
+    stroke: #337ab7;
+    stroke-width: 2px;
+    fill: #fff;
+  }
+
+  .true-dot {
+    fill:  #fff;
+    stroke:  #95d0ab;
+    stroke-width: 2px;
+  }
   path.true-interpolation {
-    fill: none;
-    stroke: #000;
-    stroke-width: 1px;
+    stroke: #95d0ab;
+    fill:none;
+    stroke-width: 2px;
   }
+
+  path.interpolation {
+    fill: none;
+    stroke: #337ab7;
+    stroke-width: 2px;
+  }
+  path.interpolation {
+
+  }
+
 }
 
 .chart-icon{
