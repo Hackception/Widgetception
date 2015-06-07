@@ -6,8 +6,6 @@ function d3Chart($timeout, $window) {
 
   function d3ChartCtrl() {
 
-    var WIDTH = 60, HEIGHT = 40;
-
     d3.argmin = function(arr, acc){
       return _.zip(arr.map(acc), arr).sort(function(a,b){
         return d3.ascending(a[0], b[0]);
@@ -54,9 +52,7 @@ function d3Chart($timeout, $window) {
       // methods that will be defined within chart()
       var drawTrueLine, drawHeatmap, hideHeatmap,
           drawUserLine, xChoices, heatmap, flashMissing;
-      heatmap = d3.range(HEIGHT).map(function(){
-        return d3.range(WIDTH);
-      });
+
       function chart() {
         var width = width_ - margin.left - margin.right,
             height = height_ - margin.top - margin.right;
