@@ -125,7 +125,7 @@ function ChartCtrl($http, $location, $q, $scope, $window, accountId, appId, idUr
   //     args: [$scope.url]
   //   }), '*');
     // $window.location.href = $scope.url;
-  };
+  // };
 
   init();
 }
