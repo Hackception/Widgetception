@@ -12,7 +12,7 @@ db.bind('maps');
 
 exports.getHeatMap = function(req, res) {
   /** query to get heat map **/
-  var contentId = req.param.contentId;
+  var contentId = req.params.contentId;
 
   if (!contentId) {
     res.status(400).send('Invalid arguments.');

@@ -47,29 +47,30 @@ function ChartCtrl($http, $q, $scope, $window, accountId, appId, idUrl, loginTok
         }
       });
 
-    // TODO: Fetch Heatmap Data
-    // $scope.heatmapPromise = $http.get('')
-    //   .then(function (data) {
-    //     if (!data.status) {
-    //       return $q.reject(data.error_message);
-    //     }
-    //   }, function (data) {
-    //     return $q.reject(data.error_message);
-    //   })
-    //   .catch(function (error) {
-    //     if (error) {
-    //       $scope.errors.push(error);
-    //     } else {
-    //       // errors.push('Unknown Error: Heatmap Data Fetch');
-    //     }
-    //   });
+    $scope.heatmapPromise = $http.get('/api/chart/' + contentId.toString())
+      .then(function (data) {
+        if (!data.status) {
+          return $q.reject(data.error_message);
+        }
+      }, function (data) {
+        return $q.reject(data.error_message);
+      })
+      .catch(function (error) {
+        if (error) {
+          $scope.errors.push(error);
+        } else {
+          // errors.push('Unknown Error: Heatmap Data Fetch');
+        }
+      });
 
     $scope.$on('d3chart::sendUserLine', function (event, userLine) {
       $http.post('/api/chart/', {
         contentId: contentId,
         accountId: accountId,
         loginToken: loginToken,
-        userLine: userLine
+        userLine: userLine,
+        xRange: $scope.rangeX,
+        yRange: $scope.yRange
       })
         .then(function (data) {
           if (!data.status) {
