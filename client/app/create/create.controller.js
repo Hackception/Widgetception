@@ -1,16 +1,17 @@
 'use strict';
 
 angular.module('lockerdomeApp')
-  .controller('CreateCtrl', function ($scope, $timeout) {
+  .controller('CreateCtrl', function ($http, $scope, $state, $timeout) {
     /* Declarations */
-    $scope.model = {
-      csv: [],
-      app_data: {}
-    };
     $scope.chartTypes = [{
       name: 'Line Chart',
       value: 'lineChart'
     }];
+    $scope.model = {
+      app_data: {},
+      csv: []
+    };
+    $scope.submitted = false;
 
     /* Functions */
     /**
@@ -51,11 +52,35 @@ angular.module('lockerdomeApp')
     };
     /**
      * Parses the model to fit the lockerdome API then posts the the server pass-through.
-     * TODO: call the API and submit the data, while submitting display a nice loading indicator, finish by clearing the
-     *  form on success or displaying an error on failure.
      */
     $scope.submit = function () {
-      console.log($scope.model);
+      if ($scope.submitted || $scope.submissionError) {
+        return;
+      }
+      $scope.submitted = true;
+
+      $scope.submitPromise = $http.post('/api/content', {
+        app_data: {
+          trueLine: $scope.model.csv,
+          type: $scope.model.app_data.type,
+          xAxis: $scope.model.app_data.xAxis,
+          yAxis: $scope.model.app_data.yAxis
+        },
+        name: $scope.model.name,
+        text: $scope.model.text
+      }).then(
+        function () {
+          var timeoutPromise = $timeout(function () {
+            $scope.submitted = true;
+            $timeout.cancel(timeoutPromise);
+            $state.go('main');
+          }, 3000);
+        }, function () {
+          var timeoutPromise = $timeout(function () {
+            $scope.submissionError = true;
+            $timeout.cancel(timeoutPromise);
+          }, 3000);
+        });
     };
 
     /* Watchers */
@@ -66,4 +91,30 @@ angular.module('lockerdomeApp')
         });
       }
     }, true);
+
+    /**
+     * @typedef {Object} CreateContentBody
+     * @property {String} name
+     * @property {String} text
+     * @property {AppData} app_data
+     */
+    /**
+     * @typedef {Object} AppData
+     * @property {String} type
+     * @property {Point[]} trueLine
+     * @property {Axis} xAxis
+     * @property {Axis} yAxis
+     */
+    /**
+     * @typedef {Object} Axis
+     * @property {String} label
+     * @property {Number} min
+     * @property {Number} max
+     * @property {Number} step
+     */
+    /**
+     * @typedef {Object} Point
+     * @property {Number} x
+     * @property {Number} y
+     */
   });

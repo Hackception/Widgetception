@@ -2,6 +2,4 @@
 
 angular.module('lockerdomeApp')
   .controller('MainCtrl', function () {
-
-
   });
