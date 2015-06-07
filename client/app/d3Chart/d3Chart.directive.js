@@ -6,7 +6,7 @@ function d3Chart($timeout, $window) {
 
   function d3ChartCtrl() {
 
-    var WIDTH = 600, HEIGHT = 400;
+    var WIDTH = 60, HEIGHT = 40;
 
     d3.argmin = function(arr, acc){
       return _.zip(arr.map(acc), arr).sort(function(a,b){
@@ -52,8 +52,11 @@ function d3Chart($timeout, $window) {
 
       // reserve some variables inside the closure for
       // methods that will be defined within chart()
-      var drawTrueLine, drawHeatmap, drawUserLine, xChoices, flashMissing;
-
+      var drawTrueLine, drawHeatmap, hideHeatmap,
+          drawUserLine, xChoices, heatmap, flashMissing;
+      heatmap = d3.range(HEIGHT).map(function(){
+        return d3.range(WIDTH);
+      });
       function chart() {
         var width = width_ - margin.left - margin.right,
             height = height_ - margin.top - margin.right;
@@ -70,24 +73,12 @@ function d3Chart($timeout, $window) {
         xChoices = d3.range.apply(null, xRange);
         //user expects fully closed interval rather than half-open
         xChoices.push(xRange[1]);
-        var canvas = this.selectAll('canvas')
-          .data([undefined]);
-
         var svg = this.selectAll('svg')
           .data([undefined]);
 
-        canvas.enter().append('canvas');
-
-        canvas
-          .attr('width', width)
-          .attr('height', height)
-          .style('left', margin.left + 'px')
-          .style('top', margin.top + 'px')
-          .style('width', width + 'px')
-          .style('height', height + 'px');
-
         //Create the skeletal chart, if it doesn't already exist.
         var gEnter = svg.enter().append("svg").append('g');
+        gEnter.append('g').attr('class', 'heat-map');
         gEnter.append('g').attr('class', 'x axis')
           .append('text').attr('class', 'x label');
         gEnter.append('g').attr('class', 'y axis')
@@ -239,28 +230,47 @@ function d3Chart($timeout, $window) {
 
             We'll make some scales to do this.
           */
+          var hm = _.flatten(heatmap).sort(d3.ascending);
+
           var xScale = d3.scale.linear()
               .domain([0, WIDTH])
               .range([0, width]),
             yScale = d3.scale.linear()
               .domain([0, HEIGHT])
-              .range([height, 0]);
+              .range([height, 0]),
+            color = d3.scale.threshold()
+              .domain(d3.range(9).map(function(ix){
+                return d3.quantile(hm, (ix + 1) / 9) + 1;
+              }))
+              .range(colorbrewer.Purples[9])
 
-          var ctx = canvas.node().getContext('2d'),
-              image = ctx.createImageData(width, height);
+          var heatRow = g.select('g.heat-map')
+            .selectAll('g.heat-row')
+            .data(heatmap)
+          .enter()
+            .append('g').attr('class','heat-row')
+            .attr('transform', function(d, ix){
+              return 'translate(0,' + yScale(ix) +  ')';
+            });
 
-          for (var yix = 0, p = -1; yix < height; ++yix) {
-            for (var xix = 0; xix < width; ++x) {
-             var c = d3.rgb(color(heatmap[y][x]));
-             image.data[++p] = c.r;
-             image.data[++p] = c.g;
-             image.data[++p] = c.b;
-             image.data[++p] = 255;
-            }
-          }
+          heatRow.selectAll('g.heat-cell')
+            .data(function(d){return d;})
+          .enter()
+            .append('g').attr('class', 'heat-cell')
+            .attr('transform', function(d, ix){
+              return 'translate(' + xScale(ix) + ',0)';
+            })
+            .append('rect')
+            .attr('y', yScale(1) - yScale(0))
+            .attr('width', xScale(1) - xScale(0))
+            .attr('height', yScale(0) - yScale(1))
+            .attr('fill', color);
 
-          ctx.putImageData(image, 0, 0);
+        };
 
+        hideHeatmap = function(){
+          g.select('g.heat-map').selectAll('g.heat-row')
+            .data([]).exit().remove();
         };
 
       }
@@ -279,7 +289,12 @@ function d3Chart($timeout, $window) {
       };
       chart.margins = function(changes){
         if (!arguments.length)  return margin;
-        _.extend(margin, changes); return chart;
+        _.each(['top','bottom','left','right'], function(k){
+          if (changes[k]){
+            margin[k] = changes[k];
+          }
+        });
+        return chart;
       };
       chart.xRange = function(_){
         if (!arguments.length) return xRange;
@@ -310,6 +325,9 @@ function d3Chart($timeout, $window) {
       chart.drawHeatmap = function(){
         drawHeatmap();
       };
+      chart.hideHeatmap = function(){
+        hideHeatmap();
+      };
       chart.isComplete = function(){
         return userLine.length === xChoices.length;
       };
@@ -331,10 +349,22 @@ function d3Chart($timeout, $window) {
 
   function link(scope, element, attrs, ctrl) {
     _.extend(scope, {
-      height: 400,
-      width: 800,
-      margins: {}
+      height: Math.min(500, window.innerHeight),
+      width: Math.min(800, window.innerWidth),
+      margins: {
+        // top: 7.5,
+        // right: 7.5,
+        // bottom: 7.5,
+        // left: 7.5
+      }
     });
+
+    function handleResize() {
+      console.log(element[0].clientHeight, element[0].clientWidth)
+      theChart.height(element[0].clientHeight).width(element[0].clientWidth);
+
+      d3.select('d3-chart').call(theChart);
+    }
 
     var theChart = ctrl.lineChart()
             .height(scope.height)
@@ -346,6 +376,7 @@ function d3Chart($timeout, $window) {
             .yRange(scope.yRange);
 
     d3.select('d3-chart').call(theChart);
+    setTimeout(handleResize, 100);
 
     var dereg = scope.$watch('showResults', function (value) {
       if (value) {
@@ -359,7 +390,7 @@ function d3Chart($timeout, $window) {
       if (value) {
         theChart.drawHeatmap();
       } else {
-        // theChart.hideHeatmap();
+        theChart.hideHeatmap();
       }
     });
 
