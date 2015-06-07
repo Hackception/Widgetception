@@ -119,11 +119,11 @@ function ChartCtrl($http, $location, $q, $scope, $window, accountId, appId, idUr
     $scope.clearData = true;
   };
 
-  $scope.redirect = function () {
-    $window.parent.postMessage(JSON.stringify({
-      name: 'request_redirect',
-      args: [$scope.url]
-    }), '*');
+  // $scope.redirect = function () {
+  //   $window.parent.postMessage(JSON.stringify({
+  //     name: 'request_redirect',
+  //     args: [$scope.url]
+  //   }), '*');
     // $window.location.href = $scope.url;
   };
 
