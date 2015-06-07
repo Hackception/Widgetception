@@ -153,6 +153,40 @@
             </div>
           </div>
           <div class="row">
+            <div class="form-group">
+              <label><input type="radio" name="optradio" ng-model="model.importType" value="csv">CSV Upload</label>
+              <label><input type="radio" name="optradio" ng-model="model.importType" value="draw">Draw A Line</label>
+            </div>
+            <div ng-switch="model.importType">
+              <div ng-switch-when="csv"
+                class="form-group col-xs-12"
+                ng-class="{'has-error': createWidgetForm.csv.$invalid && !createWidgetForm.csv.$pristine}">
+                <label for="csv">
+                  Upload a CSV file containing your true line data
+                </label>
+                <input name="csv"
+                  ng-model="model.csv"
+                  onchange="angular.element(this).scope().csvChange(this)"
+                  type="file" />
+              </div>
+              <div ng-switch-when="draw"
+                class="form-group col-xs-12">
+                <label for="draw">
+                  Draw a true line for your widget
+                </label>
+                <d3-chart label-x="{{model.app_data.xAxis.label}}"
+                  range-x="[model.app_data.xAxis.min, model.app_data.xAxis.max, model.app_data.xAxis.step]"
+                  y-range="[model.app_data.yAxis.min, model.app_data.yAxis.max, model.app_data.yAxis.step]"
+                  y-label="{{model.app_data.yAxis.label}}"
+                  show-results="false"
+                  show-heatmap="false"
+                  true-line="[]"
+                  heat-map="[]">
+                </d3-chart>
+              </div>
+            </div>
+          </div>
+          <!-- <div class="row">
             <div class="form-group col-xs-12"
               ng-class="{'has-error': createWidgetForm.csv.$invalid && !createWidgetForm.csv.$pristine}">
               <label for="csv">
@@ -163,12 +197,12 @@
                 onchange="angular.element(this).scope().csvChange(this)"
                 type="file" />
             </div>
-          </div>
+          </div> -->
         </div>
       </div>
       <div class="form-horizontal">
         <div class="form-group">
-          <button class="form-control btn btn-default pull-right"
+          <button class="form-control btn btn-default"
             ng-class="{'btn-success': submitted, 'btn-error': submissionError}"
             ng-disabled="createWidgetForm.$invalid"
             type="submit">
