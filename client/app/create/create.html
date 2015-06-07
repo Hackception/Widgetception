@@ -154,8 +154,8 @@
           </div>
           <div class="row">
             <div class="form-group">
-              <label><input type="radio" name="optradio" ng-model="model.importType" value="csv">CSV Upload</label>
-              <label><input type="radio" name="optradio" ng-model="model.importType" value="draw">Draw A Line</label>
+              <label><input required="true" type="radio" name="optradio" ng-model="model.importType" value="csv">CSV Upload</label>
+              <label><input required="true" type="radio" name="optradio" ng-model="model.importType" value="draw">Draw A Line</label>
             </div>
             <div ng-switch="model.importType">
               <div ng-switch-when="csv"
@@ -204,7 +204,7 @@
         <div class="form-group">
           <button class="form-control btn btn-default"
             ng-class="{'btn-success': submitted, 'btn-error': submissionError}"
-            ng-disabled="createWidgetForm.$invalid"
+            ng-disabled="createWidgetForm.$invalid || (model.importType === 'csv' && model.noCsv)"
             type="submit">
             {{ submitted ? 'Success' : submissionError ? 'Error!!' : 'Submit' }}
             <i class="fa fa-check" ng-if="submitted"></i>

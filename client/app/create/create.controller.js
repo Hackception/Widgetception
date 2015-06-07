@@ -9,7 +9,8 @@ angular.module('lockerdomeApp')
     }];
     $scope.model = {
       app_data: {},
-      csv: []
+      csv: [],
+      noCsv: true
     };
     $scope.submitted = false;
 
@@ -20,6 +21,7 @@ angular.module('lockerdomeApp')
      * @param {Object} inputElement
      */
     $scope.csvChange = function (inputElement) {
+      $scope.model.noCsv = false;
       var reader = new FileReader();
 
       reader.onload = function (loadEvent) {
@@ -31,8 +33,6 @@ angular.module('lockerdomeApp')
           };
           return parsed.x && parsed.y ? parsed : false;
         }).filter(Boolean);
-
-        $scope.createWidgetForm.csv.$setDirty();
 
         if (!_.isEmpty($scope.model.csv)) {
           $scope.createWidgetForm.csv.$setValidity('required', true);
@@ -57,11 +57,33 @@ angular.module('lockerdomeApp')
       if ($scope.submitted || $scope.submissionError) {
         return;
       }
+
+      if ($scope.model.importType === 'draw') {
+        var dereg = $scope.$on('d3chart::sendUserLine', function (event, userLine) {
+          if (!userLine) {
+            $scope.submitted = false;
+            dereg();
+            return;
+          }
+
+          $scope.callApi(userLine);
+          dereg();
+        });
+        $scope.$broadcast('d3chart::getUserLine');
+      } else if ($scope.model.importType === 'csv') {
+        $scope.callApi($scope.model.csv);
+      }
+    };
+
+    $scope.callApi = function (trueLine) {
+      if ($scope.submitted || $scope.submissionError) {
+        return;
+      }
       $scope.submitted = true;
 
       $scope.submitPromise = $http.post('/api/content', {
         app_data: {
-          trueLine: $scope.model.csv,
+          trueLine: trueLine,
           type: $scope.model.app_data.type,
           xAxis: $scope.model.app_data.xAxis,
           yAxis: $scope.model.app_data.yAxis
@@ -71,26 +93,17 @@ angular.module('lockerdomeApp')
       }).then(
         function () {
           var timeoutPromise = $timeout(function () {
-            $scope.submitted = true;
             $timeout.cancel(timeoutPromise);
             $state.go('main');
           }, 3000);
         }, function () {
           var timeoutPromise = $timeout(function () {
+            $scope.submitted = false;
             $scope.submissionError = true;
             $timeout.cancel(timeoutPromise);
           }, 3000);
         });
     };
-
-    /* Watchers */
-    $scope.$watch('model.app_data.type', function (newType, oldType) {
-      if (newType !== oldType && newType) {
-        $timeout(function () {
-          $scope.createWidgetForm.csv.$setValidity('required', false);
-        });
-      }
-    }, true);
 
     /**
      * @typedef {Object} CreateContentBody

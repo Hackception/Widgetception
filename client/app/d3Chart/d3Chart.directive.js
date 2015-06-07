@@ -387,6 +387,7 @@ function d3Chart($timeout, $window) {
     });
 
     scope.$on('d3chart::getUserLine', function () {
+      console.log('test');
       scope.$emit('d3chart::sendUserLine', theChart.isComplete() ? theChart.userLine() : (function () {
         theChart.flashMissing();
         return false;
