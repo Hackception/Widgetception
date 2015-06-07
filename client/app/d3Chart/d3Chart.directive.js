@@ -199,7 +199,7 @@ function d3Chart($timeout, $window) {
 
         drawTrueLine = function(){
           state.show_trueline = true;
-
+          g.select('rect.drag-target').on('.drag', null);
           var dots = g.select('g.true-line').selectAll('.true-dot')
               .data(trueLine);
           dots.enter().append('circle').attr('class', 'true-dot');
