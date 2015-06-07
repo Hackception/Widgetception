@@ -120,13 +120,13 @@ function ChartCtrl($http, $location, $q, $scope, $window, accountId, appId, idUr
     $scope.clearData = true;
   };
 
-  $scope.redirect = function () {
-    $window.parent.postMessage(JSON.stringify({
-      name: 'request_redirect',
-      path: $scope.url
-    }), '*');
-    // $window.location.href = $scope.url;
-  };
+  // $scope.redirect = function () {
+  //   $window.parent.postMessage(JSON.stringify({
+  //     name: 'request_redirect',
+  //     path: $scope.url
+  //   }), '*');
+  //   // $window.location.href = $scope.url;
+  // };
 
   init();
 }
