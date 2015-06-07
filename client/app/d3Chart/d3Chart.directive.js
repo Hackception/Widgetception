@@ -298,12 +298,7 @@ function d3Chart($timeout, $window) {
       };
       chart.margins = function(changes){
         if (!arguments.length)  {return margin;}
-        _.each(['top','bottom','left','right'], function(k){
-          if (changes[k]){
-            margin[k] = changes[k];
-          }
-        });
-        return chart;
+        _.extend(margin, changes); return chart;
       };
       chart.xRange = function(_){
         if (!arguments.length) {return xRange;}
@@ -322,7 +317,7 @@ function d3Chart($timeout, $window) {
         yLabel = _; return chart;
       };
       chart.heatmap = function(_){
-        if (!arguments.length) return heatmap;
+        if (!arguments.length) {return heatmap;}
         heatmap = _; return chart;
       };
       chart.userLine = function(_){
@@ -421,10 +416,6 @@ function d3Chart($timeout, $window) {
     scope.$on('d3chart::getUserLine', function () {
       scope.$emit('d3chart::sendUserLine', theChart.userLine());
     });
-
-    // $window.addEventListener('resize', function () {
-    //
-    // })
   }
 
   return {
