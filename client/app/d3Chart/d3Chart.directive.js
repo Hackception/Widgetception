@@ -246,21 +246,30 @@ function d3Chart($timeout, $window) {
 
           var heatRow = g.select('g.heat-map')
             .selectAll('g.heat-row')
-            .data(heatmap)
+            .data(heatmap);
+
+          heatRow
           .enter()
-            .append('g').attr('class','heat-row')
+            .append('g').attr('class','heat-row');
+
+          heatRow
             .attr('transform', function(d, ix){
               return 'translate(0,' + yScale(ix) +  ')';
             });
 
-          heatRow.selectAll('g.heat-cell')
-            .data(function(d){return d;})
+          var heatCell = heatRow.selectAll('g.heat-cell')
+            .data(function(d){return d;});
+
+          heatCell
           .enter()
             .append('g').attr('class', 'heat-cell')
+            .append('rect');
+
+          heatCell
             .attr('transform', function(d, ix){
               return 'translate(' + xScale(ix) + ',0)';
             })
-            .append('rect')
+            .select('rect')
             .attr('y', yScale(1) - yScale(0))
             .attr('width', xScale(1) - xScale(0))
             .attr('height', yScale(0) - yScale(1))
@@ -311,6 +320,10 @@ function d3Chart($timeout, $window) {
       chart.yLabel = function(_){
         if (!arguments.length) {return yLabel;}
         yLabel = _; return chart;
+      };
+      chart.heatmap = function(_){
+        if (!arguments.length) return heatmap;
+        heatmap = _; return chart;
       };
       chart.userLine = function(_){
         if (!arguments.length) {return userLine;}
