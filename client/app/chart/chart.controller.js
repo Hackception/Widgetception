@@ -100,7 +100,7 @@ function ChartCtrl($http, $q, $scope, $window, accountId, appId, idUrl, loginTok
 
     $window.parent.postMessage(JSON.stringify({
       name: 'request_height',
-      args: ['400px']
+      args: ['250px']
     }), '*');
     // $window.parent.postMessage(JSON.stringify({
     //   name: 'request_width',

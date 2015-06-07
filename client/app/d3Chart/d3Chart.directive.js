@@ -343,7 +343,7 @@ function d3Chart($timeout, $window) {
         .width(Math.min(600, window.innerWidth - 100));
 
       d3.select('d3-chart').call(theChart);
-    }, 100);
+    }, 350);
 
     var theChart = ctrl.lineChart()
             .height(scope.height)

@@ -14,7 +14,9 @@
       <p ng-bind="content"></p>
     </div>
   </div>
-  <div class="visible-xs-block">CHART</div>
+  <div class="visible-xs-block chart-icon">
+    <i class="fa fa-line-chart"></i>
+  </div>
   <d3-chart class="hidden-xs" ng-if="loaded" label-x="{{labelX}}"
     range-x="rangeX"
     y-label="{{yLabel}}"
@@ -26,7 +28,7 @@
     heat-map="heatmap">
   </d3-chart>
 
-  <div class="row">
+  <div class="row hidden-xs">
     <div class="col-xs-12">
       <label
       ng-show="showResults">
