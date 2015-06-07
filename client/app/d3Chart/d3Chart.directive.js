@@ -338,6 +338,14 @@ function d3Chart($timeout, $window) {
         .width(Math.min(600, window.innerWidth - 30));
 
       d3.select('d3-chart').call(theChart);
+
+ if (window.innerWidth - 30 > 600) {
+   $window.parent.postMessage(JSON.stringify({
+     name: 'request_height',
+     args: [ '450px']
+   }), '*');
+ }
+
     }, 350);
 
     var theChart = ctrl.lineChart()

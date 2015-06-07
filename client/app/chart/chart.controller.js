@@ -122,7 +122,7 @@ function ChartCtrl($http, $location, $q, $scope, $window, accountId, appId, idUr
   $scope.redirect = function () {
     $window.parent.postMessage(JSON.stringify({
       name: 'request_redirect',
-      path: $scope.url
+      args: [$scope.url]
     }), '*');
     // $window.location.href = $scope.url;
   };
