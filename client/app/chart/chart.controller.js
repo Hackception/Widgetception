@@ -52,6 +52,7 @@ function ChartCtrl($http, $q, $scope, $window, accountId, appId, idUrl, loginTok
         if (!data.status) {
           return $q.reject(data.error_message);
         }
+        $scope.heatmap = data.data.heatMap;
       }, function (data) {
         return $q.reject(data.error_message);
       })

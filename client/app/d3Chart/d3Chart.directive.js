@@ -6,8 +6,6 @@ function d3Chart($timeout, $window) {
 
   function d3ChartCtrl() {
 
-    var WIDTH = 60, HEIGHT = 40;
-
     d3.argmin = function(arr, acc){
       return _.zip(arr.map(acc), arr).sort(function(a,b){
         return d3.ascending(a[0], b[0]);
@@ -54,9 +52,7 @@ function d3Chart($timeout, $window) {
       // methods that will be defined within chart()
       var drawTrueLine, drawHeatmap, hideHeatmap,
           drawUserLine, xChoices, heatmap, flashMissing;
-      heatmap = d3.range(HEIGHT).map(function(){
-        return d3.range(WIDTH);
-      });
+
       function chart() {
         var width = width_ - margin.left - margin.right,
             height = height_ - margin.top - margin.right;
@@ -110,7 +106,7 @@ function d3Chart($timeout, $window) {
           warningRect.exit().remove();
           warningRect
             .attr('x', function(d, ix){
-              if (d === 0){
+              if (d === xChoices[0]){
                 return x(d);
               }
               else if (d === xChoices[xChoices.length - 1]){
@@ -120,7 +116,7 @@ function d3Chart($timeout, $window) {
              })
             .attr('height', height)
             .attr('width', function (d, ix){
-              return d === 0 ? rectWidth/2 :
+              return d === xChoices[0] ? rectWidth/2 :
                      d === xChoices[xChoices.length - 1] ? rectWidth/2 :
                      rectWidth;
              })
@@ -212,64 +208,22 @@ function d3Chart($timeout, $window) {
         };
 
         drawHeatmap = function(){
-          /* A brief review of the coordinate systems
-            we have in play:
-              - WIDTH x HEIGHT: this is the coordinate
-              system for the heatmap. It is uniform across
-              all clients and persists to our database.
-              - width x height: this is the coordinate
-              system for the svg pixels.
-              - xRange x yRange: this coordinate system is
-              user defined. It is the numbers drawn on the
-              axes on the page. The server was kind enough
-              to convert from this system to the heatmap
-              system, so we can avoid thinking about it.
 
-            We have a 2d array in heatmap coords, and we need
-            to project it into a canvas image in svg coords.
+          var heatTrace = g.select('g.heat-map')
+            .selectAll('path.trace')
+            .data(heatmap);
 
-            We'll make some scales to do this.
-          */
-          var hm = _.flatten(heatmap).sort(d3.ascending);
+          heatTrace.enter().append('path')
+            .attr('class', 'trace');
 
-          var xScale = d3.scale.linear()
-              .domain([0, WIDTH])
-              .range([0, width]),
-            yScale = d3.scale.linear()
-              .domain([0, HEIGHT])
-              .range([height, 0]),
-            color = d3.scale.threshold()
-              .domain(d3.range(9).map(function(ix){
-                return d3.quantile(hm, (ix + 1) / 9) + 1;
-              }))
-              .range(colorbrewer.Purples[9])
-
-          var heatRow = g.select('g.heat-map')
-            .selectAll('g.heat-row')
-            .data(heatmap)
-          .enter()
-            .append('g').attr('class','heat-row')
-            .attr('transform', function(d, ix){
-              return 'translate(0,' + yScale(ix) +  ')';
-            });
-
-          heatRow.selectAll('g.heat-cell')
-            .data(function(d){return d;})
-          .enter()
-            .append('g').attr('class', 'heat-cell')
-            .attr('transform', function(d, ix){
-              return 'translate(' + xScale(ix) + ',0)';
-            })
-            .append('rect')
-            .attr('y', yScale(1) - yScale(0))
-            .attr('width', xScale(1) - xScale(0))
-            .attr('height', yScale(0) - yScale(1))
-            .attr('fill', color);
+          heatTrace.attr('d', line)
+            .attr('stroke-opacity', 0.2)
+            .attr('fill', '#a2a2a2');
 
         };
 
         hideHeatmap = function(){
-          g.select('g.heat-map').selectAll('g.heat-row')
+          g.select('g.heat-map').selectAll('path.trace')
             .data([]).exit().remove();
         };
 
@@ -280,46 +234,45 @@ function d3Chart($timeout, $window) {
         return drawTrueLine();
       };
       chart.height = function(_){
-        if (!arguments.length) return height_;
+        if (!arguments.length) {return height_;}
         height_ = _; return chart;
       };
       chart.width = function(_){
-        if (!arguments.length) return width_;
+        if (!arguments.length) {return width_;}
         width_ = _; return chart;
       };
       chart.margins = function(changes){
-        if (!arguments.length)  return margin;
-        _.each(['top','bottom','left','right'], function(k){
-          if (changes[k]){
-            margin[k] = changes[k];
-          }
-        });
-        return chart;
+        if (!arguments.length)  {return margin;}
+        _.extend(margin, changes); return chart;
       };
       chart.xRange = function(_){
-        if (!arguments.length) return xRange;
+        if (!arguments.length) {return xRange;}
         xRange = _; return chart;
       };
       chart.yRange = function(_){
-        if (!arguments.length) return yRange;
+        if (!arguments.length) {return yRange;}
         yRange = _; return chart;
       };
       chart.xLabel = function(_){
-        if (!arguments.length) return xLabel;
+        if (!arguments.length) {return xLabel;}
         xLabel = _; return chart;
       };
       chart.yLabel = function(_){
-        if (!arguments.length) return yLabel;
+        if (!arguments.length) {return yLabel;}
         yLabel = _; return chart;
       };
+      chart.heatmap = function(_){
+        if (!arguments.length) {return heatmap;}
+        heatmap = _; return chart;
+      };
       chart.userLine = function(_){
-        if (!arguments.length) return userLine;
+        if (!arguments.length) {return userLine;}
         userLine = _;
         drawUserLine();
         return chart;
       };
       chart.trueLine = function(_){
-        if (!arguments.length) return trueLine;
+        if (!arguments.length) {return trueLine;}
         trueLine = _; return chart;
       };
       chart.drawHeatmap = function(){
@@ -391,6 +344,7 @@ function d3Chart($timeout, $window) {
 
     scope.$watch('showHeatmap', function (value) {
       if (value) {
+        theChart.heatmap(scope.heatMap);
         theChart.drawHeatmap();
       } else {
         theChart.hideHeatmap();
@@ -407,10 +361,6 @@ function d3Chart($timeout, $window) {
     scope.$on('d3chart::getUserLine', function () {
       scope.$emit('d3chart::sendUserLine', theChart.userLine());
     });
-
-    // $window.addEventListener('resize', function () {
-    //
-    // })
   }
 
   return {
@@ -427,7 +377,8 @@ function d3Chart($timeout, $window) {
       showHeatmap: '=',
       showResults: '=',
       clearData: '=',
-      trueLine: '='
+      trueLine: '=',
+      heatMap: '='
     },
     controller: d3ChartCtrl,
     controllerAs: 'vm',

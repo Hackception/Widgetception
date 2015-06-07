@@ -1,4 +1,4 @@
-var WIDTH = 600, HEIGHT = 400;
+var WIDTH = 60, HEIGHT = 40;
 
 /*
 function interpolateUserLine(userLine)
@@ -68,8 +68,7 @@ function sparseToDense(sparse, xRange, yRange){
         jx = Math.round(
       (d.y - yRange[0]) / (yRange[1] - yRange[0]) * HEIGHT
     );
-    dense[Math.max(Math.min(jx, HEIGHT - 1), 0)]
-         [Math.max(Math.min(ix, WIDTH - 1), 0)] = 1;
+    dense[Math.max(Math.min(jx, HEIGHT - 1), 0)][Math.max(Math.min(ix, WIDTH - 1), 0)] = 1;
   });
   return dense;
 }
@@ -95,3 +94,8 @@ function sumDenseArrays(a, b){
   }
   return c;
 }
+
+module.exports = {
+  sumDenseArrays: sumDenseArrays,
+  interpolateUserLine: interpolateUserLine
+};

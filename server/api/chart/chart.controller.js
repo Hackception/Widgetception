@@ -3,7 +3,7 @@
 var _ = require('lodash');
 var request = require('request');
 var config = require('../../config/environment');
-var heatmap = require('../../../heatmap.js');
+var heatmap = require('./heatmap');
 var mongo = require('mongoskin');
 
 var db = mongo.db(config.mongo.uri);
@@ -17,8 +17,7 @@ exports.getHeatMap = function(req, res) {
   if (!contentId) {
     res.status(400).send('Invalid arguments.');
   }
-
-  db.maps.findOne({ contentId: contentId }, function(err, result) {
+  db.maps.findOne({"contentId": +contentId}, function(err, result) {
     if (result) {
       res.json(result);
     }
