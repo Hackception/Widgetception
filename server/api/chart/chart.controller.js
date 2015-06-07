@@ -3,7 +3,7 @@
 var _ = require('lodash');
 var request = require('request');
 var config = require('../../config/environment');
-var heatmap = require('../../../heatmap.js');
+var heatmap = require('../../../heatmap');
 var mongo = require('mongoskin');
 
 var db = mongo.db(config.mongo.uri);
