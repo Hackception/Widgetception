@@ -19,5 +19,12 @@ module.exports = {
             process.env.MONGOHQ_URL ||
             process.env.OPENSHIFT_MONGODB_DB_URL+process.env.OPENSHIFT_APP_NAME ||
             'mongodb://localhost/lockerdome'
+  },
+
+  ldUrl: 'http://api.globalhack4.test.lockerdome.com',
+
+  app: {
+    id: process.env.APP_ID,
+    secret: process.env.APP_SECRET
   }
 };

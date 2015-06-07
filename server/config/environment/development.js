@@ -10,5 +10,10 @@ module.exports = {
 
   seedDB: true,
 
-  ldUrl: 'http://api.globalhack4.test.lockerdome.com'
+  ldUrl: 'http://api.globalhack4.test.lockerdome.com',
+
+  app: {
+    id: process.env.APP_ID,
+    secret: process.env.APP_SECRET
+  }
 };
