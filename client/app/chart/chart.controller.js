@@ -32,7 +32,7 @@ function ChartCtrl($http, $location, $q, $scope, $window, accountId, appId, idUr
         $scope.content = data.result.text;
         $scope.thumbUrl = data.result.thumb_url;
         $scope.type = appData.type;
-        $scope.xLabel = appData.xAxis.label;
+        $scope.labelX = appData.xAxis.label;
         $scope.yLabel = appData.yAxis.label;
         $scope.rangeX = [appData.xAxis.min, appData.xAxis.max, appData.xAxis.step];
         $scope.yRange = [appData.yAxis.min, appData.yAxis.max, appData.yAxis.step];
