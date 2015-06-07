@@ -69,7 +69,6 @@ function ChartCtrl($http, $location, $q, $scope, $window, accountId, appId, idUr
 
     $scope.$on('d3chart::sendUserLine', function (event, userLine) {
       if (!userLine) {
-        alert('Please fill out the rest of the chart');
         return;
       }
 

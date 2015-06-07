@@ -379,7 +379,10 @@ function d3Chart($timeout, $window) {
     });
 
     scope.$on('d3chart::getUserLine', function () {
-      scope.$emit('d3chart::sendUserLine', theChart.isComplete() ? theChart.userLine() : false);
+      scope.$emit('d3chart::sendUserLine', theChart.isComplete() ? theChart.userLine() : function () {
+        theChart.flashMissing();
+        return false;
+      });
     });
   }
 
