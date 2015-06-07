@@ -6,10 +6,10 @@ angular.module('lockerdomeApp')
     $scope.articles = [
       {
         title: 'Daily Facebook Usage vs Overall Happiness',
-        content: '<div>We can write a sweet article here with some awesome <i>embedded</i> <code>HTML</code> tags that will ' +
-          'get rendered properly.  Since we are running an AngularJS framework for our <sub>front-end</sub> we can just' +
-          ' drop these articles into a javascript array and they will render correctly.  This also means we could grab ' +
-          'the content from an API if we chose to.' +
+        content: '<p>A little bit of Facebook helps you keep in touch with friends and relatives.'+
+          ' Too much can make you depressed at the pictures of fun things that people are posting while ' +
+          ' you\'re surfing facebook in your underwear.</p>'+
+          '<p>How much is too much?</p>' +
           '<div style="margin: 10px 0; max-width: 550px;"><a data-width="100%" data-height="auto" id="ld-4989-7810" href="http://globalhack4.test.lockerdome.com/7740067434987585/7744602215809091">How does daily Facebook use correlate with Overall Happiness?</a><span id="ld-4989-7810-equiv"> in <a href="http://globalhack4.test.lockerdome.com/7740067434987585">Michael Stramel&#x27;s Hangs</a> on <a href="http://globalhack4.test.lockerdome.com">LockerDome</a></span><script>(function(d,s,id,elid) {window.ldInit = window.ldInit || []; ldInit.push(elid);if (d.getElementById(id)) return;var js, fjs = d.getElementsByTagName(s)[0];js=d.createElement(s); js.id=id;js.async=true;js.src="//globalhack4.test.lockerdome.com/_js/embed.js";fjs.parentNode.insertBefore(js,fjs);}(document, "script", "lockerdome-wjs", "ld-4989-7810"));</script></div>'
       },
       {
