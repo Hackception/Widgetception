@@ -31,9 +31,9 @@ angular.module('lockerdomeApp')
             x: +parsed[0],
             y: +parsed[1]
           };
-          return parsed.x && parsed.y ? parsed : false;
+          return (!Number.isNaN(parsed.x) && !Number.isNaN(parsed.y)) ? parsed : false;
         }).filter(Boolean);
-
+console.log($scope.model.csv);
         if (!_.isEmpty($scope.model.csv)) {
           $scope.createWidgetForm.csv.$setValidity('required', true);
         } else {
