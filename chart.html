@@ -6,12 +6,6 @@ body {
   font: 10px sans-serif;
 }
 
-svg, canvas {
-  position: absolute;
-}
-canvas {
-  pointer-events: none;
-}
 .axis path,
 .axis line {
   fill: none;
@@ -36,7 +30,7 @@ path.interpolation, path.true-interpolation {
 <script src="/colorbrewer.js"></script>
 <script>
 // These constants define the heatmap pixel coordinate system.
-var WIDTH = 60, HEIGHT = 40;
+var `WIDTH` = 60, HEIGHT = 40;
 
 d3.argmin = function(arr, acc){
   return _.zip(arr.map(acc), arr).sort(function(a,b){
@@ -103,21 +97,8 @@ function lineChart(){
     xChoices = d3.range.apply(null, xRange);
     //user expects fully closed interval rather than half-open
     xChoices.push(xRange[1]);
-    var canvas = this.selectAll('canvas')
-      .data([undefined]);
-
     var svg = this.selectAll('svg')
       .data([undefined]);
-
-    canvas.enter().append('canvas');
-
-    canvas
-      .attr('width', width)
-      .attr('height', height)
-      .style('left', margin.left + 'px')
-      .style('top', margin.top + 'px')
-      .style('width', width + 'px')
-      .style('height', height + 'px');
 
     //Create the skeletal chart, if it doesn't already exist.
     var gEnter = svg.enter().append("svg").append('g');
