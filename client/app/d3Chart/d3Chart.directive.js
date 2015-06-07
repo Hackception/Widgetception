@@ -6,6 +6,8 @@ function d3Chart($timeout) {
 
   function d3ChartCtrl() {
 
+    var WIDTH = 600, HEIGHT = 400;
+
     d3.argmin = function(arr, acc){
       return _.zip(arr.map(acc), arr).sort(function(a,b){
         return d3.ascending(a[0], b[0]);
@@ -50,7 +52,7 @@ function d3Chart($timeout) {
 
       // reserve some variables inside the closure for
       // methods that will be defined within chart()
-      var drawTrueLine, drawHeatmap;
+      var drawTrueLine, drawHeatmap, drawUserLine, xChoices, flashMissing;
 
       function chart() {
         var width = width_ - margin.left - margin.right,
@@ -65,7 +67,7 @@ function d3Chart($timeout) {
             .x(function(d){return x(d.x);})
             .y(function(d){return y(d.y);});
 
-        var xChoices = d3.range.apply(null, xRange);
+        xChoices = d3.range.apply(null, xRange);
         //user expects fully closed interval rather than half-open
         xChoices.push(xRange[1]);
         var canvas = this.selectAll('canvas')
@@ -90,6 +92,7 @@ function d3Chart($timeout) {
           .append('text').attr('class', 'x label');
         gEnter.append('g').attr('class', 'y axis')
           .append('text').attr('class', 'y label');
+        gEnter.append('g').attr('class', 'warn-missing');
         gEnter.append('rect').attr('class', 'drag-target');
         gEnter.append('g').attr('class', 'user-line')
           .append('path').attr('class', 'interpolation');
@@ -101,6 +104,44 @@ function d3Chart($timeout) {
           .attr("height", height_);
         var g = svg.select('g')
           .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+
+        flashMissing = function(){
+          var missingXs = _.difference(xChoices, _.pluck(userLine, 'x'));
+          if (missingXs.length === 0) return;
+
+          var rectWidth = x(1.0) - x(0);
+          var warningRect = g.select('g.warn-missing')
+            .selectAll('rect.warning')
+            .data(missingXs);
+          warningRect.enter()
+            .append('rect').attr('class', 'warning');
+          warningRect.exit().remove();
+          warningRect
+            .attr('x', function(d, ix){
+              if (d === 0){
+                return x(d);
+              }
+              else if (d === xChoices[xChoices.length - 1]){
+                return x(d) - rectWidth/2;
+              }
+              return x(d) - rectWidth/2;
+             })
+            .attr('height', height)
+            .attr('width', function (d, ix){
+              return d === 0 ? rectWidth/2 :
+                     d === xChoices[xChoices.length - 1] ? rectWidth/2 :
+                     rectWidth;
+             })
+            .attr('fill', 'orange')
+            .attr('fill-opacity', 0.3)
+          .transition()
+            .duration(2000)
+            .attr('fill-opacity', 0)
+            .each('end', function(){
+              d3.select(this).remove();
+            });
+        };
 
 
         g.select("g.x.axis")
@@ -128,7 +169,7 @@ function d3Chart($timeout) {
           .attr('height', height)
           .style('fill-opacity', 0.0);
 
-        function drawUserLine(){
+        drawUserLine = function(){
           var dots = g.select('g.user-line').selectAll('.dot')
               .data(userLine);
           dots.enter().append('circle').attr('class', 'dot');
@@ -143,14 +184,14 @@ function d3Chart($timeout) {
           });
           g.select('path.interpolation')
             .attr('d', line(userLine));
-        }
+        };
 
         function setClosestPoint(){
           var e = d3.event,
             pxX = e.x,
             pxY = e.y,
             scaleX = x.invert(pxX),
-            scaleY = y.invert(pxY),
+            scaleY = Math.max(yRange[0], Math.min(yRange[1], y.invert(pxY))),
             snapToX = d3.argmin(xChoices, function(c){
               return Math.abs(scaleX - c);
             });
@@ -161,7 +202,8 @@ function d3Chart($timeout) {
           drawUserLine();
         }
         var drag = d3.behavior.drag()
-            .on('drag', setClosestPoint);
+            .on('drag', setClosestPoint)
+            .on('dragend', flashMissing);
         g.select('rect.drag-target').call(drag)
 
         drawTrueLine = function(){
@@ -179,10 +221,45 @@ function d3Chart($timeout) {
         };
 
         drawHeatmap = function(){
-          var ctx = canvas.node().getContext('2d');
+          /* A brief review of the coordinate systems
+            we have in play:
+              - WIDTH x HEIGHT: this is the coordinate
+              system for the heatmap. It is uniform across
+              all clients and persists to our database.
+              - width x height: this is the coordinate
+              system for the svg pixels.
+              - xRange x yRange: this coordinate system is
+              user defined. It is the numbers drawn on the
+              axes on the page. The server was kind enough
+              to convert from this system to the heatmap
+              system, so we can avoid thinking about it.
 
-          ctx.fillStyle = "green";
-          ctx.fillRect(10, 10, 100, 100);
+            We have a 2d array in heatmap coords, and we need
+            to project it into a canvas image in svg coords.
+
+            We'll make some scales to do this.
+          */
+          var xScale = d3.scale.linear()
+              .domain([0, WIDTH])
+              .range([0, width]),
+            yScale = d3.scale.linear()
+              .domain([0, HEIGHT])
+              .range([height, 0]);
+
+          var ctx = canvas.node().getContext('2d'),
+              image = ctx.createImageData(width, height);
+
+          for (var yix = 0, p = -1; yix < height; ++yix) {
+            for (var xix = 0; xix < width; ++x) {
+             var c = d3.rgb(color(heatmap[y][x]));
+             image.data[++p] = c.r;
+             image.data[++p] = c.g;
+             image.data[++p] = c.b;
+             image.data[++p] = 255;
+            }
+          }
+
+          ctx.putImageData(image, 0, 0);
 
         };
 
@@ -193,43 +270,51 @@ function d3Chart($timeout) {
         return drawTrueLine();
       };
       chart.height = function(_){
-        if (!arguments.length) {return height_;}
+        if (!arguments.length) return height_;
         height_ = _; return chart;
       };
       chart.width = function(_){
-        if (!arguments.length) {return width_;}
+        if (!arguments.length) return width_;
         width_ = _; return chart;
       };
       chart.margins = function(changes){
-        if (!arguments.length)  {return margin;}
+        if (!arguments.length)  return margin;
         _.extend(margin, changes); return chart;
       };
       chart.xRange = function(_){
-        if (!arguments.length) {return xRange;}
+        if (!arguments.length) return xRange;
         xRange = _; return chart;
       };
       chart.yRange = function(_){
-        if (!arguments.length) {return yRange;}
+        if (!arguments.length) return yRange;
         yRange = _; return chart;
       };
       chart.xLabel = function(_){
-        if (!arguments.length) {return xLabel;}
+        if (!arguments.length) return xLabel;
         xLabel = _; return chart;
       };
       chart.yLabel = function(_){
-        if (!arguments.length) {return yLabel;}
+        if (!arguments.length) return yLabel;
         yLabel = _; return chart;
       };
       chart.userLine = function(_){
-        if (!arguments.length) {return userLine;}
-        userLine = _; return chart;
+        if (!arguments.length) return userLine;
+        userLine = _;
+        drawUserLine();
+        return chart;
       };
       chart.trueLine = function(_){
-        if (!arguments.length) {return trueLine;}
+        if (!arguments.length) return trueLine;
         trueLine = _; return chart;
       };
       chart.drawHeatmap = function(){
         drawHeatmap();
+      };
+      chart.isComplete = function(){
+        return userLine.length === xChoices.length;
+      };
+      chart.flashMissing = function(){
+        return flashMissing();
       };
 
       return chart;
@@ -263,7 +348,9 @@ function d3Chart($timeout) {
     d3.select('d3-chart').call(theChart);
 
     var dereg = scope.$watch('showResults', function (value) {
+      console.log('showResults', value)
       if (value) {
+        theChart.trueLine(scope.trueLine);
         theChart.drawTrueLine();
         dereg();
       }
@@ -281,7 +368,7 @@ function d3Chart($timeout) {
     scope.$watch('clearData', function (value) {
       if (value) {
         scope.clearData = !value;
-        // TODO: Clear userLine
+        theChart.userLine([]);
       }
     });
 
@@ -303,7 +390,8 @@ function d3Chart($timeout) {
       yRange: '=',
       showHeatmap: '=',
       showResults: '=',
-      clearData: '='
+      clearData: '=',
+      trueLine: '='
     },
     controller: d3ChartCtrl,
     controllerAs: 'vm',
