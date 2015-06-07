@@ -2,18 +2,30 @@
 
 <div class="container main-page">
   <div class="row">
-    <div class="col-md-6 col-xs-12 article" ng-repeat="article in articles">
-      <h2 class="title">{{ article.title }}</h2>
-      <div class="content" ng-bind-html="article.content">
+    <div ng-repeat="article in articles">
+      <div class="col-sm-6 col-xs-12">
+        <div class="article">
+          <img class="image"
+            ng-if="article.image"
+            ng-src="{{article.image}}" />
+          <h2 class="title">
+            {{ article.title }}
+          </h2>
+          <div class="author"
+            ng-if="article.author">
+            {{ article.author }}
+          </div>
+          <div class="content"
+            ng-bind-html="article.content">
+          </div>
+          <div class="text-info"
+            ng-if="article.caption">
+            {{ article.caption }}
+          </div>
+        </div>
       </div>
-      <div style="margin: 10px 0; max-width: 550px;"><a data-width="100%" data-height="auto" id="ld-8718-290" href="http://globalhack4.test.lockerdome.com/7740067434987585/7742949290934339">test</a><span id="ld-8718-290-equiv"> in <a href="http://globalhack4.test.lockerdome.com/7740067434987585">Michael Stramel&#x27;s Hangs</a> on <a href="http://globalhack4.test.lockerdome.com">LockerDome</a></span><script>(function(d,s,id,elid) {window.ldInit = window.ldInit || []; ldInit.push(elid);if (d.getElementById(id)) return;var js, fjs = d.getElementsByTagName(s)[0];js=d.createElement(s); js.id=id;js.async=true;js.src="//globalhack4.test.lockerdome.com/_js/embed.js";fjs.parentNode.insertBefore(js,fjs);}(document, "script", "lockerdome-wjs", "ld-8718-290"));</script></div>
-    </div>
-  </div>
-  <div class="row">
-    <div class="col-xs-6 col-xs-offset-3 link-me"
-      ng-click="goToCreate()">
-      <div class="text-center">
-        Try creating your very own widget by clicking here!
+      <div class="clearfix"
+        ng-if="$index % 2 === 1">
       </div>
     </div>
   </div>
