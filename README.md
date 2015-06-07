@@ -1,5 +1,28 @@
 # Charted for GlobalHack 4
 
+## Examples
+
+	- Daily Facebook Usage vs Overall Happiness
+		- xAxis: Daily Facebook Usage (minutes)
+		- xRange: [0, 200, 20]
+		- yAxis: Average Overall Happiness
+		- xRange: [0, 10, 1]
+		- trueLine:
+
+		```
+			x,y
+			0,6.5
+			20,7.8
+			40,8.1
+			60,6.5
+			80,5.2
+			100,5
+			120,5.1
+			140,4.9
+			160,3.7
+			180,3.5
+			200,3.4
+		```
 ## Endpoints
 
 - /api/chart
