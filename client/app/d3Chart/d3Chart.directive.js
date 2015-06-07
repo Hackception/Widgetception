@@ -48,9 +48,14 @@ function d3Chart($timeout, $window) {
         {x: 100, y: 79}
       ];
 
+      var state = {
+        show_heatmap: false,
+        show_trueline: false
+      };
+
       // reserve some variables inside the closure for
       // methods that will be defined within chart()
-      var drawTrueLine, drawHeatmap, hideHeatmap,
+      var drawTrueLine, drawHeatmap, hideHeatmap, bump,
           drawUserLine, xChoices, heatmap, flashMissing;
 
       function chart() {
@@ -194,9 +199,11 @@ function d3Chart($timeout, $window) {
         g.select('rect.drag-target').call(drag)
 
         drawTrueLine = function(){
-          var dots = g.select('g.true-line').selectAll('.dot')
+          state.show_trueline = true;
+
+          var dots = g.select('g.true-line').selectAll('.true-dot')
               .data(trueLine);
-          dots.enter().append('circle').attr('class', 'dot');
+          dots.enter().append('circle').attr('class', 'true-dot');
           dots.exit().remove();
           dots
               .attr("r", 3.5)
@@ -208,6 +215,7 @@ function d3Chart($timeout, $window) {
         };
 
         drawHeatmap = function(){
+          state.show_heatmap = true;
 
           var heatTrace = g.select('g.heat-map')
             .selectAll('path.trace')
@@ -223,9 +231,23 @@ function d3Chart($timeout, $window) {
         };
 
         hideHeatmap = function(){
+          state.show_heatmap = false;
+
           g.select('g.heat-map').selectAll('path.trace')
             .data([]).exit().remove();
         };
+
+        bump = function(){
+          drawUserLine();
+          if (state.show_trueline){
+            drawTrueLine();
+          }
+          if (state.show_heatmap){
+            drawHeatmap();
+          }
+        };
+
+        bump();
 
       }
 
@@ -287,6 +309,9 @@ function d3Chart($timeout, $window) {
       chart.flashMissing = function(){
         return flashMissing();
       };
+      chart.bump = function(){
+        return bump();
+      }
 
       return chart;
 
