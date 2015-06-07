@@ -55,7 +55,7 @@ function ChartCtrl($http, $location, $q, $scope, $window, accountId, appId, idUr
         if (!data.status) {
           return $q.reject(data.error_message);
         }
-        $scope.heatmap = data.data.heatMap;
+        $scope.heatmap = _.pluck(data.data, 'userLine');
       }, function (data) {
         return $q.reject(data.error_message);
       })
