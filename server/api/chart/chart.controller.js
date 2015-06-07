@@ -13,12 +13,16 @@ exports.getHeatMap = function(req, res) {
   /** query to get heat map **/
   var contentId = req.param.contentId;
 
+  if (!contentId) {
+    res.status(400).send('Invalid arguments.');
+  }
+
   db.maps.findOne({ contentId: contentId }, function(err, result) {
     if (result) {
       res.json(result);
     }
     else {
-      res.status(403).send('Heat map not found.');
+      res.status(400).send('Heat map not found.');
     }
   });
 };
@@ -26,6 +30,10 @@ exports.getHeatMap = function(req, res) {
 exports.post = function(req, res) {
   /** persist submission to submissions collection **/
   var args = req.body;
+
+  if (!(args && args.contentId > 0 && args.accountId > 0)) {
+    res.status(400).send('Invalid arguments.');
+  }
 
   db.submissions.insert(args,
     function(err, records) {
@@ -52,7 +60,7 @@ exports.post = function(req, res) {
   //
   //   db.maps.save(result, function(err, obj) {
   //     if (err) {
-  //       res.status(403).send('Failure');
+  //       res.status(400).send('Failure');
   //     }
   //     else {
   //       res.send('success!');
