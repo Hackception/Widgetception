@@ -28,3 +28,39 @@
     margin-top: 70px;
     border-top: 1px solid #E5E5E5;
 }
+
+.main-page {
+  .article {
+    padding: 0 15px 10px 15px;
+
+    .title, .content {
+      width: 100%;
+    }
+    .title {
+      font-size: 16pt;
+      font-weight: bold;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    }
+  }
+  .row {
+    margin-bottom: 15px;
+  }
+  .link-me, .article {
+    border-radius: 15px;
+    border: 1px solid rgba(67, 147, 185, 0.3);
+    box-shadow: 0 0 10px rgba(67, 147, 185, 0.5);
+    background-color: rgba(255, 255, 255, 0.6);
+  }
+  .link-me {
+    &:hover {
+      background-color: lighten(#9f9e9c, 25%);
+      cursor: pointer;
+    }
+
+    .text-center {
+      width: 100%;
+      padding-top: 10px;
+      padding-bottom: 10px;
+    }
+  }
+}

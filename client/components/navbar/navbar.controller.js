@@ -5,6 +5,9 @@ angular.module('lockerdomeApp')
     $scope.menu = [{
       'title': 'Home',
       'link': '/'
+    }, {
+      title: 'Create',
+      link: '/create'
     }];
 
     $scope.isCollapsed = true;
