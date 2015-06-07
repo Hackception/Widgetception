@@ -8,7 +8,8 @@ var mongo = require('mongoskin');
 
 var db = mongo.db(config.mongo.uri);
 db.bind('submissions');
-db.bind('maps');
+
+//db.bind('maps');
 
 exports.getHeatMap = function(req, res) {
   /** query to get heat map **/
@@ -17,14 +18,16 @@ exports.getHeatMap = function(req, res) {
   if (!contentId) {
     res.status(400).send('Invalid arguments.');
   }
-  db.maps.findOne({"contentId": +contentId}, function(err, result) {
-    if (result) {
+
+  db.submissions.find({ contentId: +contentId})
+    .limit(100).toArray(function(error, result) {
+      if (error) {
+        res.status(400).send('SQL Error.');
+      }
+
       res.json(result);
-    }
-    else {
-      res.status(400).send('Heat map not found.');
-    }
-  });
+    });
+
 };
 
 exports.post = function(req, res) {
@@ -37,34 +40,34 @@ exports.post = function(req, res) {
 
   db.submissions.insert(args,
     function(err, records) {
-      //res.send('success!');
+      res.send('success!');
     });
 
-  var contentId = args.contentId;
-
-  /** persist heat map update to maps collection **/
-  db.maps.findOne({ contentId: contentId }, function(err, result) {
-    var userHeatMap = heatmap.interpolateUserLine(args.userLine, args.xRange, args.yRange);
-
-    if (result) {
-      /** save new heat map into map collection **/
-      result.heatMap = heatmap.sumDenseArrays(result.heatMap, userHeatMap);
-    }
-    else {
-      /** no result use submission line **/
-      result = {
-        contentId: contentId,
-        heatMap: userHeatMap
-      };
-    }
-
-    db.maps.save(result, function(err, obj) {
-      if (err) {
-        res.status(400).send('Failure');
-      }
-      else {
-        res.send('success!');
-      }
-    });
-  });
+  // var contentId = args.contentId;
+  //
+  // /** persist heat map update to maps collection **/
+  // db.maps.findOne({ contentId: contentId }, function(err, result) {
+  //   var userHeatMap = heatmap.interpolateUserLine(args.userLine, args.xRange, args.yRange);
+  //
+  //   if (result) {
+  //     /** save new heat map into map collection **/
+  //     result.heatMap = heatmap.sumDenseArrays(result.heatMap, userHeatMap);
+  //   }
+  //   else {
+  //     /** no result use submission line **/
+  //     result = {
+  //       contentId: contentId,
+  //       heatMap: userHeatMap
+  //     };
+  //   }
+  //
+  //   db.maps.save(result, function(err, obj) {
+  //     if (err) {
+  //       res.status(400).send('Failure');
+  //     }
+  //     else {
+  //       res.send('success!');
+  //     }
+  //   });
+  // });
 };
