@@ -2,7 +2,8 @@
 
 var _ = require('lodash');
 var request = require('request');
-var config = require('../../config/environment')
+var config = require('../../config/environment');
+var heatmap = require('../../../heatmap.js');
 var mongo = require('mongoskin');
 
 var db = mongo.db(config.mongo.uri);
@@ -37,34 +38,34 @@ exports.post = function(req, res) {
 
   db.submissions.insert(args,
     function(err, records) {
-      res.send('success!');
+      //res.send('success!');
     });
 
-  // var contentId = args.contentId;
-  //
-  // /** persist heat map update to maps collection **/
-  // db.maps.findOne({ contentId: contentId }, function(err, result) {
-  //   if (result) {
-  //     /** save new heat map into map collection **/
-  //
-  //     // not correct logic just a placeholder
-  //     result.heatMap = result.heatMap + args.userLine;
-  //   }
-  //   else {
-  //     /** no result use submission line **/
-  //     result = {};
-  //
-  //     // not correct logic just a placeholder
-  //     result.heatMap = args.userLine;
-  //   }
-  //
-  //   db.maps.save(result, function(err, obj) {
-  //     if (err) {
-  //       res.status(400).send('Failure');
-  //     }
-  //     else {
-  //       res.send('success!');
-  //     }
-  //   });
-  // });
+  var contentId = args.contentId;
+
+  /** persist heat map update to maps collection **/
+  db.maps.findOne({ contentId: contentId }, function(err, result) {
+    var userHeatMap = heatmap.interpolateUserLine(args.userLine, args.xRange, args.yRange);
+
+    if (result) {
+      /** save new heat map into map collection **/
+      result.heatMap = heatmap.sumDenseArrays(result.heatMap, userHeatMap);
+    }
+    else {
+      /** no result use submission line **/
+      result = {
+        contentId: contentId,
+        heatMap: userHeatMap
+      };
+    }
+
+    db.maps.save(result, function(err, obj) {
+      if (err) {
+        res.status(400).send('Failure');
+      }
+      else {
+        res.send('success!');
+      }
+    });
+  });
 };
