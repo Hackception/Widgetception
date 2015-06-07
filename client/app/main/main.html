@@ -2,17 +2,30 @@
 
 <div class="container main-page">
   <div class="row">
-    <div class="col-md-6 col-xs-12 article" ng-repeat="article in articles">
-      <h2 class="title">{{ article.title }}</h2>
-      <div class="content" ng-bind-html="article.content">
+    <div ng-repeat="article in articles">
+      <div class="col-sm-6 col-xs-12">
+        <div class="article">
+          <img class="image"
+            ng-if="article.image"
+            ng-src="{{article.image}}" />
+          <h2 class="title">
+            {{ article.title }}
+          </h2>
+          <div class="author"
+            ng-if="article.author">
+            {{ article.author }}
+          </div>
+          <div class="content"
+            ng-bind-html="article.content">
+          </div>
+          <div class="text-info"
+            ng-if="article.caption">
+            {{ article.caption }}
+          </div>
+        </div>
       </div>
-    </div>
-  </div>
-  <div class="row">
-    <div class="col-xs-6 col-xs-offset-3 link-me"
-      ng-click="goToCreate()">
-      <div class="text-center">
-        Try creating your very own widget by clicking here!
+      <div class="clearfix"
+        ng-if="$index % 2 === 1">
       </div>
     </div>
   </div>
