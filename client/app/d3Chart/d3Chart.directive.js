@@ -14,7 +14,7 @@ function d3Chart($timeout, $window) {
 
     function lineChart(){
       var width_ = 850, height_ = 500,
-          margin = {top: 20, right: 20, bottom: 30, left: 40};
+          margin = {top: 20, right: 20, bottom: 50, left: 40};
 
       var xRange = [0, 100, 10],
           yRange = [0, 100, 10],
@@ -167,10 +167,9 @@ function d3Chart($timeout, $window) {
           dots.enter().append('circle').attr('class', 'dot');
           dots.exit().remove();
           dots
-              .attr("r", 3.5)
+              .attr("r", 2)
               .attr("cx", function(d) { return x(d.x); })
-              .attr("cy", function(d) { return y(d.y); })
-              .style("fill", 'tomato');
+              .attr("cy", function(d) { return y(d.y); });
           userLine.sort(function(a,b){
             return d3.ascending(a.x, b.x);
           });
@@ -206,10 +205,9 @@ function d3Chart($timeout, $window) {
           dots.enter().append('circle').attr('class', 'true-dot');
           dots.exit().remove();
           dots
-              .attr("r", 3.5)
+              .attr("r", 2)
               .attr("cx", function(d) { return x(d.x); })
               .attr("cy", function(d) { return y(d.y); })
-              .style("fill", 'steelblue');
           g.select('path.true-interpolation')
             .attr('d', line(trueLine));
         };
@@ -340,7 +338,7 @@ function d3Chart($timeout, $window) {
     var handleResize = _.debounce(function() {
       theChart
         .height(Math.min(500, window.innerHeight - 100))
-        .width(Math.min(600, window.innerWidth - 100));
+        .width(Math.min(600, window.innerWidth - 30));
 
       d3.select('d3-chart').call(theChart);
     }, 350);
