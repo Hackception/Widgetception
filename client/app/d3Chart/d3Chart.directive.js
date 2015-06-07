@@ -214,7 +214,6 @@ function d3Chart($timeout, $window) {
 
         drawHeatmap = function(){
           state.show_heatmap = true;
-
           var heatTrace = g.select('g.heat-map')
             .selectAll('path.trace')
             .data(heatmap);
@@ -222,9 +221,7 @@ function d3Chart($timeout, $window) {
           heatTrace.enter().append('path')
             .attr('class', 'trace');
 
-          heatTrace.attr('d', line)
-            .attr('stroke-opacity', 0.2)
-            .attr('fill', '#a2a2a2');
+          heatTrace.attr('d', line);
 
         };
 
