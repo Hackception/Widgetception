@@ -4,25 +4,24 @@ angular.module('lockerdomeApp')
   .config(function ($stateProvider) {
     $stateProvider
       .state('chart', {
-        url: '/bacon?account_id&app_id&Id_url&login_token&args',
+        url: '/bacon?:junk',
         templateUrl: 'app/chart/chart.html',
         controller: 'ChartCtrl',
-        controllerAs: 'vm',
         resolve: {
-          accountId: ['$stateParams', function ($stateParams) {
-            return $stateParams.account_id;
+          accountId: ['$location', function ($location) {
+            return JSON.parse(Object.keys($location.search())[0]).account_id;
           }],
-          appId: ['$stateParams', function ($stateParams) {
-            return $stateParams.app_id;
+          appId: ['$location', function ($location) {
+            return JSON.parse(Object.keys($location.search())[0]).app_id;
           }],
-          idUrl: ['$stateParams', function ($stateParams) {
-            return $stateParams.Id_url;
+          idUrl: ['$location', function ($location) {
+            return JSON.parse(Object.keys($location.search())[0]).Id_url;
           }],
-          loginToken: ['$stateParams', function ($stateParams) {
-            return $stateParams.login_token;
+          loginToken: ['$location', function ($location) {
+            return JSON.parse(Object.keys($location.search())[0]).login_token;
           }],
-          args: ['$stateParams', function ($stateParams) {
-            return ($stateParams.args || JSON.stringify({}));
+          args: ['$location', function ($location) {
+            return (JSON.parse(Object.keys($location.search())[0]).args || {});
           }]
         }
       });

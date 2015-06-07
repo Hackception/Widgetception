@@ -1,27 +1,27 @@
-<div ng-if="!vm.showResults" cg-busy="vm.contentRender"></div>
-<div ng-if="vm.showResults && vm.showHeatmap" cg-busy="vm.heatmapRender"></div>
+<div ng-if="!showResults" cg-busy="contentRender"></div>
+<div ng-if="showResults && showHeatmap" cg-busy="heatmapRender"></div>
 
-<div ng-if="vm.errors.length === 0">
+<div ng-if="errors.length === 0">
   <div class="row">
     <div class="col-xs-12">
-      <img ng-src="{{vm.thumbUrl}}" ng-if="vm.thumbUrl"/>
-      <h3 ng-bind="vm.headline"></h3>
+      <img ng-src="{{thumbUrl}}" ng-if="thumbUrl"/>
+      <h3 ng-bind="headline"></h3>
     </div>
   </div>
 
   <div class="row">
     <div class="col-xs-12">
-      <p ng-bind="vm.content"></p>
+      <p ng-bind="content"></p>
     </div>
   </div>
-  <d3-chart label-x="{{vm.labelX}}"
-    range-x="vm.rangeX"
-    y-label="{{vm.yLabel}}"
-    y-range="vm.yRange"
-    show-results="vm.showResults"
-    show-heatmap="vm.showHeatmap"
-    clear-data="vm.clearData"
-    true-line="vim.trueLine">
+  <d3-chart ng-if="loaded" label-x="{{labelX}}"
+    range-x="rangeX"
+    y-label="{{yLabel}}"
+    y-range="yRange"
+    show-results="showResults"
+    show-heatmap="showHeatmap"
+    clear-data="clearData"
+    true-line="trueLine">
   </d3-chart>
 
   <div class="row">
@@ -29,20 +29,20 @@
       <label>
         <input type="checkbox"
           class="pull-left"
-          ng-model="vm.showHeatmap"
+          ng-model="showHeatmap"
           />
         Show Heatmap
       </label>
       <button class="btn btn-default pull-right"
-        ng-click="vm.handleClear()">Clear</button>
+        ng-click="handleClear()">Clear</button>
       <button class="btn btn-primary pull-right"
-        ng-click="vm.handleSubmission()">I'm done</button>
+        ng-click="handleSubmission()">I'm done</button>
     </div>
   </div>
 </div>
 
-<div ng-if="vm.errors.length > 0">
+<div ng-if="errors.length > 0">
   <ul>
-    <li ng-repeat="error in vm.errors" ng-bind="error"></li>
+    <li ng-repeat="error in errors" ng-bind="error"></li>
   </ul>
 </div>

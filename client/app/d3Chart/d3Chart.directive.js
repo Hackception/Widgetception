@@ -2,7 +2,7 @@
 'use strict';
 
 // Directive Function
-function d3Chart($timeout) {
+function d3Chart($timeout, $window) {
 
   function d3ChartCtrl() {
 
@@ -348,7 +348,6 @@ function d3Chart($timeout) {
     d3.select('d3-chart').call(theChart);
 
     var dereg = scope.$watch('showResults', function (value) {
-      console.log('showResults', value)
       if (value) {
         theChart.trueLine(scope.trueLine);
         theChart.drawTrueLine();
@@ -361,7 +360,6 @@ function d3Chart($timeout) {
         theChart.drawHeatmap();
       } else {
         // theChart.hideHeatmap();
-        console.log('hide heatmap')
       }
     });
 
@@ -375,6 +373,10 @@ function d3Chart($timeout) {
     scope.$on('d3chart::getUserLine', function () {
       scope.$emit('d3chart::sendUserLine', theChart.userLine());
     });
+
+    // $window.addEventListener('resize', function () {
+    //
+    // })
   }
 
   return {
@@ -402,5 +404,6 @@ function d3Chart($timeout) {
 angular.module('lockerdomeApp')
   .directive('d3Chart', [
     '$timeout',
+    '$window',
     d3Chart
   ]);
