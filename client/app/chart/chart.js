@@ -15,7 +15,7 @@ angular.module('lockerdomeApp')
             return JSON.parse(Object.keys($location.search())[0]).app_id;
           }],
           idUrl: ['$location', function ($location) {
-            return JSON.parse(Object.keys($location.search())[0]).Id_url;
+            return JSON.parse(Object.keys($location.search())[0]).ld_url;
           }],
           loginToken: ['$location', function ($location) {
             return JSON.parse(Object.keys($location.search())[0]).login_token;

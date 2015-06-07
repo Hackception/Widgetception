@@ -1,10 +1,13 @@
 // jshint camelcase:false
 'use strict';
 
-function ChartCtrl($http, $q, $scope, $window, accountId, appId, idUrl, loginToken, args) {
+function ChartCtrl($http, $location, $q, $scope, $window, accountId, appId, idUrl, loginToken, args) {
   var contentId = _.get(args, 'id');
   var operation = _.get(args, 'op');
-
+  $scope.idUrl = idUrl;
+  $scope.contentId = contentId;
+  $scope.url = idUrl.toString() + '/7740067434987585/' + contentId.toString();
+  console.log(idUrl, contentId, $scope.url)
   $scope.errors = [];
   $scope.showResults = false;
 
@@ -117,6 +120,14 @@ function ChartCtrl($http, $q, $scope, $window, accountId, appId, idUrl, loginTok
     $scope.clearData = true;
   };
 
+  $scope.redirect = function () {
+    $window.parent.postMessage(JSON.stringify({
+      name: 'request_redirect',
+      path: $scope.url
+    }), '*');
+    // $window.location.href = $scope.url;
+  };
+
   init();
 }
 
@@ -124,6 +135,7 @@ angular
   .module('lockerdomeApp')
   .controller('ChartCtrl', [
     '$http',
+    '$location',
     '$q',
     '$scope',
     '$window',

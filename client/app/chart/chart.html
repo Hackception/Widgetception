@@ -14,8 +14,9 @@
       <p ng-bind="content"></p>
     </div>
   </div>
-  <div class="visible-xs-block chart-icon">
-    <i class="fa fa-line-chart"></i>
+  <div class="visible-xs-block chart-icon" ng-click="redirect()">
+    <i class="fa fa-line-chart"></i><br>
+    <span>Click the view page button to interact</span>
   </div>
   <d3-chart class="hidden-xs" ng-if="loaded" label-x="{{labelX}}"
     range-x="rangeX"
