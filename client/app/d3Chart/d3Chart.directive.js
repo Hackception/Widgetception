@@ -342,7 +342,7 @@ function d3Chart($timeout, $window) {
  if (window.innerWidth - 30 > 600) {
    $window.parent.postMessage(JSON.stringify({
      name: 'request_height',
-     args: [ '450px']
+     args: [ '400px']
    }), '*');
  }
 
