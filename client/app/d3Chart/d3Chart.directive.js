@@ -110,7 +110,7 @@ function d3Chart($timeout, $window) {
           warningRect.exit().remove();
           warningRect
             .attr('x', function(d, ix){
-              if (d === 0){
+              if (d === xChoices[0]){
                 return x(d);
               }
               else if (d === xChoices[xChoices.length - 1]){
@@ -120,7 +120,7 @@ function d3Chart($timeout, $window) {
              })
             .attr('height', height)
             .attr('width', function (d, ix){
-              return d === 0 ? rectWidth/2 :
+              return d === xChoices[0] ? rectWidth/2 :
                      d === xChoices[xChoices.length - 1] ? rectWidth/2 :
                      rectWidth;
              })
