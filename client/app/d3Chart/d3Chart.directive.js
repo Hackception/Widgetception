@@ -338,7 +338,7 @@ function d3Chart($timeout, $window) {
     var handleResize = _.debounce(function() {
       theChart
         .height(Math.min(500, window.innerHeight - 100))
-        .width(Math.min(600, window.innerWidth - 100));
+        .width(Math.min(600, window.innerWidth - 30));
 
       d3.select('d3-chart').call(theChart);
     }, 350);
