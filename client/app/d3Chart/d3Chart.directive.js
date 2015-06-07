@@ -242,7 +242,7 @@ function d3Chart($timeout, $window) {
               .domain(d3.range(9).map(function(ix){
                 return d3.quantile(hm, (ix + 1) / 9) + 1;
               }))
-              .range(colorbrewer.Purples[9])
+              .range(colorbrewer.Purples[9]);
 
           var heatRow = g.select('g.heat-map')
             .selectAll('g.heat-row')
@@ -280,15 +280,15 @@ function d3Chart($timeout, $window) {
         return drawTrueLine();
       };
       chart.height = function(_){
-        if (!arguments.length) return height_;
+        if (!arguments.length) {return height_;}
         height_ = _; return chart;
       };
       chart.width = function(_){
-        if (!arguments.length) return width_;
+        if (!arguments.length) {return width_;}
         width_ = _; return chart;
       };
       chart.margins = function(changes){
-        if (!arguments.length)  return margin;
+        if (!arguments.length)  {return margin;}
         _.each(['top','bottom','left','right'], function(k){
           if (changes[k]){
             margin[k] = changes[k];
@@ -297,29 +297,29 @@ function d3Chart($timeout, $window) {
         return chart;
       };
       chart.xRange = function(_){
-        if (!arguments.length) return xRange;
+        if (!arguments.length) {return xRange;}
         xRange = _; return chart;
       };
       chart.yRange = function(_){
-        if (!arguments.length) return yRange;
+        if (!arguments.length) {return yRange;}
         yRange = _; return chart;
       };
       chart.xLabel = function(_){
-        if (!arguments.length) return xLabel;
+        if (!arguments.length) {return xLabel;}
         xLabel = _; return chart;
       };
       chart.yLabel = function(_){
-        if (!arguments.length) return yLabel;
+        if (!arguments.length) {return yLabel;}
         yLabel = _; return chart;
       };
       chart.userLine = function(_){
-        if (!arguments.length) return userLine;
+        if (!arguments.length) {return userLine;}
         userLine = _;
         drawUserLine();
         return chart;
       };
       chart.trueLine = function(_){
-        if (!arguments.length) return trueLine;
+        if (!arguments.length) {return trueLine;}
         trueLine = _; return chart;
       };
       chart.drawHeatmap = function(){
@@ -391,6 +391,7 @@ function d3Chart($timeout, $window) {
 
     scope.$watch('showHeatmap', function (value) {
       if (value) {
+        theChart.heatmap(scope.heatMap);
         theChart.drawHeatmap();
       } else {
         theChart.hideHeatmap();
@@ -427,7 +428,8 @@ function d3Chart($timeout, $window) {
       showHeatmap: '=',
       showResults: '=',
       clearData: '=',
-      trueLine: '='
+      trueLine: '=',
+      heatMap: '='
     },
     controller: d3ChartCtrl,
     controllerAs: 'vm',
