@@ -1,7 +1,7 @@
 <div ng-if="!showResults" cg-busy="contentRender"></div>
 <div ng-if="showResults && showHeatmap" cg-busy="heatmapRender"></div>
 
-<div ng-if="errors.length === 0">
+<div ng-if="errors.length === 0" cg-busy="{promise: submission, delay: 250, minDuration: 1000}">
   <div class="row">
     <div class="col-xs-12">
       <img ng-src="{{thumbUrl}}" ng-if="thumbUrl"/>
@@ -27,7 +27,8 @@
 
   <div class="row">
     <div class="col-xs-12">
-      <label>
+      <label
+      ng-show="showResults">
         <input type="checkbox"
           class="pull-left"
           ng-model="showHeatmap"
@@ -35,9 +36,11 @@
         Show Heatmap
       </label>
       <button class="btn btn-default pull-right"
-        ng-click="handleClear()">Clear</button>
+        ng-click="handleClear()"
+        ng-disabled="showResults">Clear</button>
       <button class="btn btn-primary pull-right"
-        ng-click="handleSubmission()">I'm done</button>
+        ng-click="handleSubmission()"
+        ng-disabled="showResults">I'm done</button>
     </div>
   </div>
 </div>
