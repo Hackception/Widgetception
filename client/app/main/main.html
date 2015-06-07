@@ -15,8 +15,7 @@
             ng-if="article.author">
             {{ article.author }}
           </div>
-          <div class="content"
-            ng-bind-html="article.content">
+          <div class="content" generate-content="article.content">
           </div>
           <div class="text-info"
             ng-if="article.caption">
