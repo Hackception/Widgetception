@@ -1,5 +1,7 @@
 # Charted for GlobalHack 4
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/Hackception/Widgetception.svg)](https://greenkeeper.io/)
+
 ## Examples
 
 	- Daily Facebook Usage vs Overall Happiness
